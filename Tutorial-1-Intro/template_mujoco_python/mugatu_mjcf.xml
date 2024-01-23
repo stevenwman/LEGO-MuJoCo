@@ -1,6 +1,7 @@
 <mujoco>
 
 	<option gravity="0 0 -9.81"/>
+	<option integrator="RK4"/>
 	
 	<asset>
 		<mesh name="r_leg" file = "base_link.STL"/>
@@ -9,20 +10,22 @@
 
 	<worldbody>
         <light diffuse=".5 .5 .5" pos="0 0 3" dir="0 0 -1"/>
-		<geom type="plane" size="1 1 0.1" rgba=".9 0 0 1"/>
+		<geom type="plane" size="1 1 0.1" rgba=".9 0 0 1" friction=".9 1 0" margin="0.001"/>
 
-		<body pos="0 0 1" euler="90 0 0">
+		<body pos="0 0 .3" euler="90 0 0">
 			<joint type="free"/>
-			<geom type="mesh" name="r_leg" mesh="r_leg"/>
-			<body pos="0 0 0" euler="0 0 0">
-				<joint name="hip_joint" type="hinge" axis="1 0 0"/>
-				<geom type="mesh" name="l_leg" mesh="l_leg"/>
+			<geom type="mesh" name="r_leg" mesh="r_leg" mass="0.4" friction="1 2 0" margin="0.001"/>
+
+			<body pos="-0.01 0 0" euler="0 0 0">""
+				<joint name="hip_joint" type="hinge" axis="1 0 0" limited="false"/>
+				<geom type="mesh" name="l_leg" mesh="l_leg" mass="0.4" friction="1 2 0" margin="0.001"/>
 			</body>
 		</body>
 
 	</worldbody>
 
 	<actuator>
-		<position joint="hip_joint"/>
+		<position joint="hip_joint" kp="1"/>
 	</actuator>
+
 </mujoco>

@@ -1,15 +1,16 @@
 import mujoco as mj
 from mujoco.glfw import glfw
 import numpy as np
-import os, math
+import matplotlib.pyplot as plt
+import os, math, time
 
-FPS = 1650 # display fps
+FPS = 165 # display fps
+TIMESTEP = 0.002 # simulation time step
 
 xml_path = 'hello.xml' #xml file (assumes this is in the same folder as this file)
 xml_path = '/home/sman/Work/CMU/Research/LEGO-project/LEGO-MuJoCo/Tutorial-1-Intro/template_mujoco_python/mugatu_mjcf.xml'
-simend = 5 #simulation time
-print_camera_config = 1 #set to 1 to print camera config
-                        #this is useful for initializing view of the model)
+simend = 15 #simulation time
+print_camera_config = 0 #set to 1 to print camera config
 
 # For callback functions
 button_left = False
@@ -24,11 +25,13 @@ def init_controller(model,data):
 
 def controller(model, data):
     #put the controller here. This function is called inside the simulation.
-    freq = 2
-    ang_freq = 2*math.pi*freq
-    pos_amp = 20 / 180 * math.pi
+    if data.time < 1:
+        return
+
+    freq = 1.5
+    ang_freq = 2 * math.pi * freq
+    pos_amp = 25 / 180 * math.pi
     data.ctrl[0] = pos_amp * math.sin(ang_freq * data.time)
-    pass
 
 def keyboard(window, key, scancode, act, mods):
     if act == glfw.PRESS and key == glfw.KEY_BACKSPACE:
@@ -120,6 +123,11 @@ glfw.swap_interval(1)
 # initialize visualization data structures
 mj.mjv_defaultCamera(cam)
 mj.mjv_defaultOption(opt)
+
+# opt.flags[mj.mjtVisFlag.mjVIS_CONTACTPOINT] = True
+# opt.flags[mj.mjtVisFlag.mjVIS_CONTACTFORCE] = True
+# model.vis.scale.forcewidth = 0.05
+
 scene = mj.MjvScene(model, maxgeom=10000)
 context = mj.MjrContext(model, mj.mjtFontScale.mjFONTSCALE_150.value)
 
@@ -146,13 +154,25 @@ init_controller(model,data)
 #set the controller
 mj.set_mjcb_control(controller)
 
+start_time = time.time()
+
 while not glfw.window_should_close(window):
     time_prev = data.time
 
-    while (data.time - time_prev < 1.0/FPS):
+    # while (data.time - time_prev < 1.0/FPS):
+    #     pass
+    elapsed_time = time.time() - start_time
+
+    while (elapsed_time > data.time):
         mj.mj_step(model, data)
 
+    # step_duration = time.time() - start_time    
+    # sleep_duration = max(0, TIMESTEP - step_duration)
+    # time.sleep(sleep_duration)
+
     if (data.time>=simend):
+        print(data.time)
+        print(time.time() - start_time)
         break
 
     # get framebuffer viewport
