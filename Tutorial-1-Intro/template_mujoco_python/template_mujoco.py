@@ -1,11 +1,14 @@
 import mujoco as mj
 from mujoco.glfw import glfw
 import numpy as np
-import os
+import os, math
+
+FPS = 1650 # display fps
 
 xml_path = 'hello.xml' #xml file (assumes this is in the same folder as this file)
+xml_path = '/home/sman/Work/CMU/Research/LEGO-project/LEGO-MuJoCo/Tutorial-1-Intro/template_mujoco_python/mugatu_mjcf.xml'
 simend = 5 #simulation time
-print_camera_config = 0 #set to 1 to print camera config
+print_camera_config = 1 #set to 1 to print camera config
                         #this is useful for initializing view of the model)
 
 # For callback functions
@@ -21,6 +24,10 @@ def init_controller(model,data):
 
 def controller(model, data):
     #put the controller here. This function is called inside the simulation.
+    freq = 2
+    ang_freq = 2*math.pi*freq
+    pos_amp = 20 / 180 * math.pi
+    data.ctrl[0] = pos_amp * math.sin(ang_freq * data.time)
     pass
 
 def keyboard(window, key, scancode, act, mods):
@@ -93,14 +100,14 @@ def scroll(window, xoffset, yoffset):
     mj.mjv_moveCamera(model, action, 0.0, -0.05 *
                       yoffset, scene, cam)
 
-#get the full path
+#get the full path (basically useless)
 dirname = os.path.dirname(__file__)
 abspath = os.path.join(dirname + "/" + xml_path)
 xml_path = abspath
 
 # MuJoCo data structures
 model = mj.MjModel.from_xml_path(xml_path)  # MuJoCo model
-data = mj.MjData(model)                # MuJoCo data
+data = mj.MjData(model)                     # MuJoCo data
 cam = mj.MjvCamera()                        # Abstract camera
 opt = mj.MjvOption()                        # visualization options
 
@@ -128,6 +135,11 @@ glfw.set_scroll_callback(window, scroll)
 # cam.distance = 2
 # cam.lookat = np.array([0.0, 0.0, 0])
 
+cam.azimuth = 140
+cam.elevation = -15
+cam.distance = 1.8
+cam.lookat = np.array([0.0, 0.0, 0])
+
 #initialize the controller
 init_controller(model,data)
 
@@ -137,15 +149,14 @@ mj.set_mjcb_control(controller)
 while not glfw.window_should_close(window):
     time_prev = data.time
 
-    while (data.time - time_prev < 1.0/60.0):
+    while (data.time - time_prev < 1.0/FPS):
         mj.mj_step(model, data)
 
     if (data.time>=simend):
-        break;
+        break
 
     # get framebuffer viewport
-    viewport_width, viewport_height = glfw.get_framebuffer_size(
-        window)
+    viewport_width, viewport_height = glfw.get_framebuffer_size(window)
     viewport = mj.MjrRect(0, 0, viewport_width, viewport_height)
 
     #print camera configuration (help to initialize the view)
@@ -154,8 +165,7 @@ while not glfw.window_should_close(window):
         print('cam.lookat =np.array([',cam.lookat[0],',',cam.lookat[1],',',cam.lookat[2],'])')
 
     # Update scene and render
-    mj.mjv_updateScene(model, data, opt, None, cam,
-                       mj.mjtCatBit.mjCAT_ALL.value, scene)
+    mj.mjv_updateScene(model, data, opt, None, cam, mj.mjtCatBit.mjCAT_ALL.value, scene)
     mj.mjr_render(viewport, scene, context)
 
     # swap OpenGL buffers (blocking call due to v-sync)

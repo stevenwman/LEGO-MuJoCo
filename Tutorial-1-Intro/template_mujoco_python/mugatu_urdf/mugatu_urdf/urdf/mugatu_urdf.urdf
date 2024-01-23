@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="mugatu_urdf">
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="-0.040241 -0.11526 0.01316"
+        rpy="0 0 0" />
+      <mass
+        value="0.37704" />
+      <inertia
+        ixx="0.00079734"
+        ixy="-3.35E-05"
+        ixz="5.6203E-06"
+        iyy="0.00068444"
+        iyz="2.6321E-05"
+        izz="0.00045785" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://mugatu_urdf/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="baselink">
+        <color
+          rgba="0.79216 0 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://mugatu_urdf/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="Empty_Link">
+    <inertial>
+      <origin
+        xyz="0.040241 -0.11526 0.01316"
+        rpy="0 0 0" />
+      <mass
+        value="0.37704" />
+      <inertia
+        ixx="0.00079734"
+        ixy="3.35E-05"
+        ixz="-5.6203E-06"
+        iyy="0.00068444"
+        iyz="2.6321E-05"
+        izz="0.00045785" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://mugatu_urdf/meshes/Empty_Link.STL" />
+      </geometry>
+      <material
+        name="emptylink">
+        <color
+          rgba="0 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://mugatu_urdf/meshes/Empty_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="hip_joint"
+    type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="Empty_Link" />
+    <axis
+      xyz="-1 0 0" />
+    <limit
+      lower="-1.5"
+      upper="1.5"
+      effort="100"
+      velocity="31.4" />
+  </joint>
+</robot>
