@@ -8,7 +8,7 @@ FPS = 165 # display fps
 TIMESTEP = 0.002 # simulation time step
 
 xml_path = 'hello.xml' #xml file (assumes this is in the same folder as this file)
-xml_path = '/home/sman/Work/CMU/Research/LEGO-project/LEGO-MuJoCo/Tutorial-1-Intro/template_mujoco_python/mugatu_mjcf.xml'
+xml_path = 'mugatu_mjcf.xml'
 simend = 15 #simulation time
 print_camera_config = 0 #set to 1 to print camera config
 
