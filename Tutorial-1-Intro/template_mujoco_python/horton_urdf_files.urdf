@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by
+Stephen Brawner (brawner@gmail.com) 
      Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
      For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
 <robot
@@ -24,9 +25,9 @@
       <origin
         xyz="0 0 0"
         rpy="0 0 0" />
-      <geometry>
+      <geometry name="l_leg">
         <mesh
-          filename="package://horton_urdf_files/meshes/l_leg.STL" />
+          filename="l_leg.STL" />
       </geometry>
       <material
         name="">
@@ -40,7 +41,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://horton_urdf_files/meshes/l_leg.STL" />
+          filename="l_leg.STL" />
       </geometry>
     </collision>
   </link>
@@ -64,9 +65,9 @@
       <origin
         xyz="0 0 0"
         rpy="0 0 0" />
-      <geometry>
+      <geometry name="l_foot">
         <mesh
-          filename="package://horton_urdf_files/meshes/l_foot.STL" />
+          filename="l_foot.STL" />
       </geometry>
       <material
         name="">
@@ -80,7 +81,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://horton_urdf_files/meshes/l_foot.STL" />
+          filename="l_foot.STL" />
       </geometry>
     </collision>
   </link>
@@ -122,9 +123,9 @@
       <origin
         xyz="0 0 0"
         rpy="0 0 0" />
-      <geometry>
+      <geometry name="r_leg">
         <mesh
-          filename="package://horton_urdf_files/meshes/r_leg.STL" />
+          filename="r_leg.STL" />
       </geometry>
       <material
         name="">
@@ -138,7 +139,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://horton_urdf_files/meshes/r_leg.STL" />
+          filename="r_leg.STL" />
       </geometry>
     </collision>
   </link>
@@ -180,9 +181,9 @@
       <origin
         xyz="0 0 0"
         rpy="0 0 0" />
-      <geometry>
+      <geometry name="r_foot">
         <mesh
-          filename="package://horton_urdf_files/meshes/r_foot.STL" />
+          filename="r_foot.STL" />
       </geometry>
       <material
         name="">
@@ -196,7 +197,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://horton_urdf_files/meshes/r_foot.STL" />
+          filename="r_foot.STL" />
       </geometry>
     </collision>
   </link>

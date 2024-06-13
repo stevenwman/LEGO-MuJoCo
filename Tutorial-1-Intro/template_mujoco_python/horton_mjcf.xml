@@ -1,31 +1,48 @@
 <mujoco>
 
-	<option gravity="0 0 -9.81"/>
-	<option integrator="RK4"/>
-	
-	<asset>
-		<mesh name="r_leg" file = "base_link.STL"/>
-		<mesh name="l_leg" file = "Empty_Link.STL"/>
-	</asset>
+    <option gravity="0 0 -10" />
+    <option integrator="RK4" />
 
-	<worldbody>
-        <light diffuse=".5 .5 .5" pos="0 0 3" dir="0 0 -1"/>
-		<geom type="plane" size="1 1 0.1" rgba=".9 0 0 1" friction=".9 1 0" margin="0.001"/>
+    <asset>
+        <!-- Placeholder for mesh files -->
+        <mesh name="l_leg" file="l_leg.STL" />
+        <mesh name="l_foot" file="l_foot.STL" />
+        <mesh name="r_leg" file="r_leg.STL" />
+        <mesh name="r_foot" file="r_foot.STL" />
+    </asset>
 
-		<body pos="0 0 .3" euler="90 0 0">
-			<joint type="free"/>
-			<geom type="mesh" name="r_leg" mesh="r_leg" mass="0.4" friction="1 20 0" margin="0.0001"/>
+    <worldbody>
+        <light diffuse=".5 .5 .5" pos="0 0 3" dir="0 0 -1" />
+        <geom type="plane" size="1 1 0.1" rgba=".9 0 0 1" friction=".9 1 0" margin="0.001"/>
+        <!-- Hip Joint connecting both legs -->
+        <!-- Left Leg -->
+        <body name="left_leg" pos="0 0 0.25" euler="90 0 0">
+            <joint type="free" />
+            <geom type="mesh" mesh="l_leg" name="left_leg_geom" friction="1 2 0" margin="0.001"/>
 
-			<body pos="-0.01 0 0" euler="0 0 0">""
-				<joint name="hip_joint" type="hinge" axis="1 0 0" limited="false"/>
-				<geom type="mesh" name="l_leg" mesh="l_leg" mass="0.4" friction="1 20 0" margin="0.0001"/>
-			</body>
-		</body>
+            <!-- Left Foot -->
+            <body name="left_foot" pos="0 0 0">
+                <joint name="left_foot_joint" type="slide" pos="0 0 0" axis="0 -1 0" range="0 0.015"/>
+                <geom type="mesh" mesh="l_foot" name="left_foot_geom" friction="1 2 0" margin="0.001"/>
+            </body>
 
-	</worldbody>
+            <body name="right_leg" pos="0 0 0">
+                <joint name="hip_joint" type="hinge" pos="0 0 0" axis="1 0 0" />
+                <geom type="mesh" mesh="r_leg" name="right_leg_geom" friction="1 2 0" margin="0.001"/>
 
-	<actuator>
-		<position joint="hip_joint" kp="1"/>
-	</actuator>
+                <!-- Right Foot -->
+                <body name="right_foot" pos="0 0 0" >
+                    <joint name="right_foot_joint" type="slide" pos="0 0 0" axis="0 -1 0" range="0 0.015"/>
+                    <geom type="mesh" mesh="r_foot" name="right_foot_geom" friction="1 2 0" margin="0.001"/>
+                </body>
+            </body>
+        </body>
+    </worldbody>
 
+    <actuator>
+        <!-- Actuators for the hip and foot joints -->
+        <!-- <position joint="hip_joint" kp="1" /> -->
+        <position joint="left_foot_joint" kp="1"/>
+        <position joint="right_foot_joint" kp="1"/>
+    </actuator>
 </mujoco>

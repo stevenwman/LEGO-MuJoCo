@@ -7,8 +7,9 @@ import os, math, time
 FPS = 165 # display fps
 TIMESTEP = 0.002 # simulation time step
 
-xml_path = 'hello.xml' #xml file (assumes this is in the same folder as this file)
+# xml_path = 'hello.xml' #xml file (assumes this is in the same folder as this file)
 xml_path = 'mugatu_mjcf.xml'
+xml_path = 'horton_mjcf.xml'
 simend = 15 #simulation time
 print_camera_config = 0 #set to 1 to print camera config
 
