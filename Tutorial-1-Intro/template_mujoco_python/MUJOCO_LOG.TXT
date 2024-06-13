@@ -43,3 +43,9 @@ WARNING: Nan, Inf or huge value in QACC at DOF 3. The simulation is unstable. Ti
 Mon Jan 22 19:42:38 2024
 WARNING: Nan, Inf or huge value in QACC at DOF 0. The simulation is unstable. Time = 0.0400.
 
+Wed Jun 12 23:00:05 2024
+WARNING: mju_openResource: unknown file '/home/sman/Work/CMU/Research/LEGO-project/LEGO-MuJoCo/Tutorial-1-Intro/template_mujoco_python//home/sman/Work/CMU/Research/LEGO-project/LEGO-MuJoCo/Tutorial-1-Intro/template_mujoco_python/mugatu_mjcf.xml'
+
+Wed Jun 12 23:09:06 2024
+WARNING: mju_openResource: unknown file '/home/sman/Work/CMU/Research/LEGO-project/LEGO-MuJoCo/Tutorial-1-Intro/template_mujoco_python//home/sman/Work/CMU/Research/LEGO-project/LEGO-MuJoCo/Tutorial-1-Intro/template_mujoco_python/mugatu_mjcf.xml'
+

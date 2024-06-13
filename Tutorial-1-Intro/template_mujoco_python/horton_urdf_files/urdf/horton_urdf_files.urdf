@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="horton_urdf_files">
+  <link
+    name="l_leg">
+    <inertial>
+      <origin
+        xyz="0.0245 -0.037154 -0.0075237"
+        rpy="0 0 0" />
+      <mass
+        value="0.084087" />
+      <inertia
+        ixx="8.3472E-05"
+        ixy="-7.0723E-22"
+        ixz="4.5039E-22"
+        iyy="1.2554E-05"
+        iyz="-1.4675E-06"
+        izz="8.122E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://horton_urdf_files/meshes/l_leg.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 0 0 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://horton_urdf_files/meshes/l_leg.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="l_foot">
+    <inertial>
+      <origin
+        xyz="0.036703 -0.1002 -0.0079999"
+        rpy="0 0 0" />
+      <mass
+        value="0.10264" />
+      <inertia
+        ixx="6.8122E-05"
+        ixy="-3.3036E-06"
+        ixz="-2.4446E-10"
+        iyy="9.0753E-05"
+        iyz="-2.4932E-10"
+        izz="3.1313E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://horton_urdf_files/meshes/l_foot.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 0 0 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://horton_urdf_files/meshes/l_foot.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="l_ext"
+    type="prismatic">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="l_leg" />
+    <child
+      link="l_foot" />
+    <axis
+      xyz="0 -1 0" />
+    <limit
+      lower="-69"
+      upper="69"
+      effort="69"
+      velocity="69" />
+  </joint>
+  <link
+    name="r_leg">
+    <inertial>
+      <origin
+        xyz="-0.0245 -0.037154 -0.0075237"
+        rpy="0 0 0" />
+      <mass
+        value="0.084087" />
+      <inertia
+        ixx="8.3472E-05"
+        ixy="-3.2575E-22"
+        ixz="8.663E-22"
+        iyy="1.2554E-05"
+        iyz="-1.4675E-06"
+        izz="8.122E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://horton_urdf_files/meshes/r_leg.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0 0 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://horton_urdf_files/meshes/r_leg.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="hip_joint"
+    type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="l_leg" />
+    <child
+      link="r_leg" />
+    <axis
+      xyz="-1 0 0" />
+    <limit
+      lower="-69"
+      upper="69"
+      effort="69"
+      velocity="69" />
+  </joint>
+  <link
+    name="r_foot">
+    <inertial>
+      <origin
+        xyz="-0.036703 -0.1002 -0.0080001"
+        rpy="0 0 0" />
+      <mass
+        value="0.10264" />
+      <inertia
+        ixx="6.8122E-05"
+        ixy="3.3036E-06"
+        ixz="-2.4446E-10"
+        iyy="9.0753E-05"
+        iyz="2.4932E-10"
+        izz="3.1313E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://horton_urdf_files/meshes/r_foot.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0 0 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://horton_urdf_files/meshes/r_foot.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="r_ext"
+    type="fixed">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="r_leg" />
+    <child
+      link="r_foot" />
+    <axis
+      xyz="0 0 0" />
+    <limit
+      lower="-69"
+      upper="69"
+      effort="69"
+      velocity="69" />
+  </joint>
+</robot>
