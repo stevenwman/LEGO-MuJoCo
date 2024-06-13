@@ -35,9 +35,20 @@ def controller(model, data):
     pos_amp = 15 / 180 * math.pi
     # data.ctrl[0] = pos_amp * math.sin(ang_freq * data.time)
     # data.ctrl[0] = 0
-    data.ctrl[0] = 2 * math.sin(math.sin(ang_freq * data.time))
-    data.ctrl[1] = -2 * math.sin(math.sin(ang_freq * data.time))
+    # data.ctrl[0] = 2 * math.sin(math.sin(ang_freq * data.time))
+    # data.ctrl[1] = -2 * math.sin(math.sin(ang_freq * data.time))
 
+    period = 1/freq
+
+    if data.time < 1:
+        data.ctrl[0] = 2
+        data.ctrl[1] = 2
+    elif data.time % period < period/2:
+        data.ctrl[0] = 2
+        data.ctrl[1] = -2
+    elif data.time % period > period/2:
+        data.ctrl[0] = -2
+        data.ctrl[1] = 2
 
 def keyboard(window, key, scancode, act, mods):
     if act == glfw.PRESS and key == glfw.KEY_BACKSPACE:
