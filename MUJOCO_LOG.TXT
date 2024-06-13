@@ -1,0 +1,9 @@
+Tue Jan 23 15:44:41 2024
+WARNING: mju_openResource: unknown file '/home/sman/Desktop/Work/Research/LEGO-project/LEGO-MuJoCo/Tutorial-1-Intro/template_mujoco_python//home/sman/Work/CMU/Research/LEGO-project/LEGO-MuJoCo/Tutorial-1-Intro/template_mujoco_python/mugatu_mjcf.xml'
+
+Tue Jan 23 15:45:03 2024
+WARNING: mju_openResource: unknown file '/home/sman/Desktop/Work/Research/LEGO-project/LEGO-MuJoCo/Tutorial-1-Intro/template_mujoco_python//Tutorial-1-Intro/template_mujoco_python/mugatu_mjcf.xml'
+
+Tue Jan 23 15:47:22 2024
+ERROR: could not create window
+

@@ -14,11 +14,11 @@
 
 		<body pos="0 0 .3" euler="90 0 0">
 			<joint type="free"/>
-			<geom type="mesh" name="r_leg" mesh="r_leg" mass="0.4" friction="1 2 0" margin="0.001"/>
+			<geom type="mesh" name="r_leg" mesh="r_leg" mass="0.4" friction="1 20 0" margin="0.0001"/>
 
 			<body pos="-0.01 0 0" euler="0 0 0">""
 				<joint name="hip_joint" type="hinge" axis="1 0 0" limited="false"/>
-				<geom type="mesh" name="l_leg" mesh="l_leg" mass="0.4" friction="1 2 0" margin="0.001"/>
+				<geom type="mesh" name="l_leg" mesh="l_leg" mass="0.4" friction="1 20 0" margin="0.0001"/>
 			</body>
 		</body>
 
