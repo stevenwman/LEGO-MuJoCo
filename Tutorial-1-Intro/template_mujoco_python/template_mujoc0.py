@@ -30,7 +30,7 @@ def controller(model, data):
     if data.time < 1:
         return
 
-    freq = 1.7
+    freq = 1.25
     ang_freq = 2 * math.pi * freq
     pos_amp = 15 / 180 * math.pi
     # data.ctrl[0] = pos_amp * math.sin(ang_freq * data.time)
