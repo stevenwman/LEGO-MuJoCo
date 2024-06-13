@@ -13,7 +13,7 @@
 
     <worldbody>
         <light diffuse=".5 .5 .5" pos="0 0 3" dir="0 0 -1" />
-        <geom type="plane" size="1 1 0.1" rgba=".9 0 0 1" friction="0.07 0.1 0.05"/>
+        <geom type="plane" size="1 1 0.1" rgba=".9 0 0 1" friction="0.7 0.1 0.05" solimp="0.99 0.99 0.0001 0.5 2" solref="0.01 1" condim="3"/>
         <!-- Hip Joint connecting both legs -->
         <!-- Left Leg -->
         <body name="left_leg" pos="0 0 0.25" euler="90 0 0">
@@ -23,7 +23,7 @@
             <!-- Left Foot -->
             <body name="left_foot" pos="0 0 0">
                 <joint name="left_foot_joint" type="slide" pos="0 0 0" axis="0 -1 0" range="0 0.015"/>
-                <geom type="mesh" mesh="l_foot" name="left_foot_geom" friction="0.07 0.1 0.05" solimp="0.99 0.99 0.01" solref="0.02 1"/>
+                <geom type="mesh" mesh="l_foot" name="left_foot_geom" friction="0.7 0.1 0.05" solimp="0.99 0.99 0.0001 0.5 2" solref="0.01 1" condim="3"/>
             </body>
 
             <body name="right_leg" pos="0 0 0">
@@ -33,7 +33,7 @@
                 <!-- Right Foot -->
                 <body name="right_foot" pos="0 0 0" >
                     <joint name="right_foot_joint" type="slide" pos="0 0 0" axis="0 -1 0" range="0 0.015"/>
-                    <geom type="mesh" mesh="r_foot" name="right_foot_geom" friction="0.07 0.1 0.05" solimp="0.99 0.99 0.01" solref="0.02 1"/>
+                    <geom type="mesh" mesh="r_foot" name="right_foot_geom" friction="0.7 0.1 0.05" solimp="0.99 0.99 0.0001 0.5 2" solref="0.01 1" condim="3"/>
                 </body>
             </body>
         </body>
