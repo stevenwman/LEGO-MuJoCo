@@ -39,7 +39,7 @@
       <body name="left_foot" pos="0 0 0">
         <inertial pos="-0.041798 -0.010453 -0.14105" mass="0.13" diaginertia="3.5093E-05 1.6948E-05 4.6282E-05" />
         <geom name="left_foot_geom" mesh="left_foot" class="visual" />
-        <geom name="left_foot_geom_c" mesh="left_foot" class="collision" condim="3" friction="1 0.005 0.0001" />
+        <geom name="left_foot_geom_c" mesh="left_foot" class="collision" condim="3" friction="0.9 0.9 0.001" />
       </body>
 
       
@@ -49,7 +49,7 @@
 
         
         <body name="right_hand" pos="0 0 0">
-          <inertial pos="0.063219 0.006502 -0.096732" mass="0.047" diaginertia="1.6385E-05 4.4778E-06 1.3827E-05" />
+          <inertial pos="0.063219 0.006502 -0.096732" mass="0.05" diaginertia="1.6385E-05 4.4778E-06 1.3827E-05" />
           <geom name="right_hand_geom" mesh="right_hand" class="visual" />
         </body>
       </body>
@@ -64,7 +64,7 @@
         <body name="right_foot" pos="0 0 0">
           <inertial pos="0.041698 -0.010453 -0.14105" mass="0.13" diaginertia="3.5093E-05 1.6948E-05 4.6282E-05" />
           <geom name="right_foot_geom" mesh="right_foot" class="visual" />
-          <geom name="right_foot_geom_c" mesh="right_foot" class="collision" condim="3" friction="1 0.005 0.0001" />
+          <geom name="right_foot_geom_c" mesh="right_foot" class="collision" condim="3" friction="0.9 0.9 0.001" />
         </body>
 
         
@@ -74,7 +74,7 @@
 
           
           <body name="left_hand" pos="0 0 0">
-            <inertial pos="-0.063219 0.006502 -0.096374" mass="0.047" diaginertia="1.6385E-05 4.4778E-06 1.3827E-05" />
+            <inertial pos="-0.063219 0.006502 -0.096374" mass="0.05" diaginertia="1.6385E-05 4.4778E-06 1.3827E-05" />
             <geom name="left_hand_geom" mesh="left_hand" class="visual" />
           </body>
         </body>

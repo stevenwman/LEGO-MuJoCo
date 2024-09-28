@@ -52,7 +52,7 @@
 
         <!-- Right Hand fixed to right arm -->
         <body name="right_hand" pos="0 0 0">
-          <inertial pos="0.063219 0.006502 -0.096732" mass="0.047"
+          <inertial pos="0.063219 0.006502 -0.096732" mass="0.05"
             diaginertia="1.6385E-05 4.4778E-06 1.3827E-05" />
           <geom name="right_hand_geom" mesh="right_hand" class="visual" />
         </body>
@@ -82,7 +82,7 @@
 
           <!-- Left Hand fixed to left arm -->
           <body name="left_hand" pos="0 0 0">
-            <inertial pos="-0.063219 0.006502 -0.096374" mass="0.047"
+            <inertial pos="-0.063219 0.006502 -0.096374" mass="0.05"
               diaginertia="1.6385E-05 4.4778E-06 1.3827E-05" />
             <geom name="left_hand_geom" mesh="left_hand" class="visual" />
           </body>

@@ -8,19 +8,17 @@ old_robot_path = 'Mugatu/mugatu.xml'
 new_robot_path = 'Mugatu/mugatu2.xml'
 new_scene_path = 'Mugatu/scene2.xml'
 
-# solref = '.01 0'
-# solimp = '0.9 0.95 0.001 0.5 2'
+# solref = '.001 1'
 new_foot_mass = '0.13'
 condim = '3'
-new_friction_params = '1 0.005 0.0001'
-leg_amp_deg = 42.2 * 0.75
+# new_friction_params = '1 0.005 0.0001'
+new_friction_params = '0.9 0.9 0.001'
+leg_amp_deg = 42.2
 com_height = 0.066
 joint_height = 0.15
-hip_freq = 1.8
+hip_freq = 1.4
 hip_omega = 2*np.pi*hip_freq
 hip_omega = np.sqrt(9.81/(joint_height - com_height))
-
-print(hip_omega/2/np.pi)
 
 robot_tree = ET.parse(old_robot_path)
 robot_root = robot_tree.getroot()
