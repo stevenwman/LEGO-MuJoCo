@@ -1,0 +1,68 @@
+import mujoco as mjc
+import mujoco_viewer as mjcv
+import numpy as np
+import xml.etree.ElementTree as ET
+import matplotlib.pyplot as plt
+
+old_robot_path = 'Mugatu/mugatu.xml'
+new_robot_path = 'Mugatu/mugatu2.xml'
+new_scene_path = 'Mugatu/scene2.xml'
+
+# solref = '.01 0'
+# solimp = '0.9 0.95 0.001 0.5 2'
+new_foot_mass = '0.13'
+condim = '3'
+new_friction_params = '1 0.005 0.0001'
+leg_amp_deg = 42.2 * 0.75
+com_height = 0.066
+joint_height = 0.15
+hip_freq = 1.8
+hip_omega = 2*np.pi*hip_freq
+hip_omega = np.sqrt(9.81/(joint_height - com_height))
+
+print(hip_omega/2/np.pi)
+
+robot_tree = ET.parse(old_robot_path)
+robot_root = robot_tree.getroot()
+
+right_foot_body = robot_root.find(".//body[@name='right_foot']")
+left_foot_body = robot_root.find(".//body[@name='left_foot']")
+right_foot_body.find('inertial').set('mass', new_foot_mass)
+left_foot_body.find('inertial').set('mass', new_foot_mass)
+
+# default_element = robot_root.find(".//default")
+# default_element.find('geom').set('solref', solref)
+# default_element.find('geom').set('solimp', solimp)
+
+right_foot_geom = robot_root.find(".//geom[@name='right_foot_geom_c']")
+left_foot_geom = robot_root.find(".//geom[@name='left_foot_geom_c']")
+right_foot_geom.set('condim', condim)
+left_foot_geom.set('condim', condim)
+right_foot_geom.set('friction', new_friction_params)
+left_foot_geom.set('friction', new_friction_params)
+
+robot_tree.write(new_robot_path)
+
+model = mjc.MjModel.from_xml_path(new_scene_path)
+# model.opt.cone = 0
+data = mjc.MjData(model)
+
+viewer = mjcv.MujocoViewer(model, data, width=int(1920/2), height=int(1080/2))
+
+mjc.mj_step(model, data)
+leg_amp_rad = np.deg2rad(leg_amp_deg)
+
+for i in range(100000):
+    if viewer.is_alive:
+        mjc.mj_step(model, data)
+        if i > 1500:
+            data.actuator("hip_joint_act").ctrl = leg_amp_rad * \
+                np.sin(hip_omega*data.time)
+
+        # data.joint("").xanchor to find joint location
+        # data.subtree_com() to find com location
+        viewer.render()
+    else:
+        break
+
+viewer.close()

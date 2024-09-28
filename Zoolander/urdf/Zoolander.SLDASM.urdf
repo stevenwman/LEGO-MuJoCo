@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="Zoolander.SLDASM">
+  <link
+    name="left_leg">
+    <inertial>
+      <origin
+        xyz="-0.020135 0.0060914 -0.037528"
+        rpy="0 0 0" />
+      <mass
+        value="0.074376" />
+      <inertia
+        ixx="0.00016466"
+        ixy="-5.0302E-06"
+        ixz="2.2184E-05"
+        iyy="0.00017142"
+        iyz="-6.8807E-06"
+        izz="3.6129E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Zoolander.SLDASM/meshes/left_leg.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Zoolander.SLDASM/meshes/left_leg.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="left_foot">
+    <inertial>
+      <origin
+        xyz="-0.041798 -0.010453 -0.14105"
+        rpy="0 0 0" />
+      <mass
+        value="0.05124" />
+      <inertia
+        ixx="3.5093E-05"
+        ixy="-2.5919E-07"
+        ixz="-1.4003E-06"
+        iyy="1.6948E-05"
+        iyz="-5.3422E-06"
+        izz="4.6282E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Zoolander.SLDASM/meshes/left_foot.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Zoolander.SLDASM/meshes/left_foot.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="left_foot_fixed"
+    type="fixed">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="left_leg" />
+    <child
+      link="left_foot" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="right_leg">
+    <inertial>
+      <origin
+        xyz="0.024301 0.0087941 -0.048016"
+        rpy="0 0 0" />
+      <mass
+        value="0.053384" />
+      <inertia
+        ixx="0.00012812"
+        ixy="1.4804E-06"
+        ixz="-6.2658E-06"
+        iyy="0.00012609"
+        iyz="3.6629E-07"
+        izz="1.6956E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Zoolander.SLDASM/meshes/right_leg.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Zoolander.SLDASM/meshes/right_leg.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="hip_joint"
+    type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="left_leg" />
+    <child
+      link="right_leg" />
+    <axis
+      xyz="1 0 0" />
+    <limit
+      lower="-1.6"
+      upper="1.6"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="right_foot">
+    <inertial>
+      <origin
+        xyz="0.041698 -0.010453 -0.14105"
+        rpy="0 0 0" />
+      <mass
+        value="0.05124" />
+      <inertia
+        ixx="3.5093E-05"
+        ixy="2.5904E-07"
+        ixz="1.4003E-06"
+        iyy="1.6948E-05"
+        iyz="-5.3423E-06"
+        izz="4.6282E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Zoolander.SLDASM/meshes/right_foot.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Zoolander.SLDASM/meshes/right_foot.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="right_foot_fixed"
+    type="fixed">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="right_leg" />
+    <child
+      link="right_foot" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="left_arm">
+    <inertial>
+      <origin
+        xyz="-0.047956 0.0025663 -0.01277"
+        rpy="0 0 0" />
+      <mass
+        value="0.062169" />
+      <inertia
+        ixx="8.9606E-05"
+        ixy="-2.2957E-06"
+        ixz="2.8314E-05"
+        iyy="0.00011168"
+        iyz="-5.5857E-06"
+        izz="3.1289E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Zoolander.SLDASM/meshes/left_arm.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Zoolander.SLDASM/meshes/left_arm.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="left_arm_fixed"
+    type="fixed">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="right_leg" />
+    <child
+      link="left_arm" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="left_hand">
+    <inertial>
+      <origin
+        xyz="-0.063219 0.006502 -0.096374"
+        rpy="0 0 0" />
+      <mass
+        value="0.047" />
+      <inertia
+        ixx="1.6385E-05"
+        ixy="0"
+        ixz="0"
+        iyy="4.4778E-06"
+        iyz="0"
+        izz="1.3827E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Zoolander.SLDASM/meshes/left_hand.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.0078431 0.23922 0.82353 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Zoolander.SLDASM/meshes/left_hand.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="left_hand_fixed"
+    type="fixed">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="left_arm" />
+    <child
+      link="left_hand" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="right_arm">
+    <inertial>
+      <origin
+        xyz="0.04926 0.00272 -0.01279"
+        rpy="0 0 0" />
+      <mass
+        value="0.05925" />
+      <inertia
+        ixx="9.294E-05"
+        ixy="2.11E-06"
+        ixz="-3.114E-05"
+        iyy="0.00011438"
+        iyz="-5.73E-06"
+        izz="3.013E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Zoolander.SLDASM/meshes/right_arm.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Zoolander.SLDASM/meshes/right_arm.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="right_arm_fixed"
+    type="fixed">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="left_leg" />
+    <child
+      link="right_arm" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="right_hand">
+    <inertial>
+      <origin
+        xyz="0.063219 0.006502 -0.096732"
+        rpy="0 0 0" />
+      <mass
+        value="0.047" />
+      <inertia
+        ixx="1.6385E-05"
+        ixy="0"
+        ixz="0"
+        iyy="4.4778E-06"
+        iyz="0"
+        izz="1.3827E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Zoolander.SLDASM/meshes/right_hand.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.0078431 0.23922 0.82353 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://Zoolander.SLDASM/meshes/right_hand.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="right_hand_fixed"
+    type="fixed">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="right_arm" />
+    <child
+      link="right_hand" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+</robot>
