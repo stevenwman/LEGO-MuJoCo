@@ -1,5 +1,6 @@
 <mujoco model="mugatu">
   <compiler angle="radian" meshdir="assets" autolimits="true" />
+  <option solver="PGS" iterations="150"/>
 
   <asset>
     <material name="black" rgba="0.2 0.2 0.2 1" />
