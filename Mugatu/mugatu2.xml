@@ -17,7 +17,7 @@
 
   <default>
     <mesh scale="1 1 1" />
-    <geom type="mesh" solref="0.01 1" />
+    <geom type="mesh" />
     <joint damping="1.084" armature="0.045" frictionloss="0.03" />
     <position kp="21.1" ctrlrange="-1.6 1.6" forcerange="-5 5" />
     <default class="visual">
@@ -40,7 +40,7 @@
       <body name="left_foot" pos="0 0 0">
         <inertial pos="-0.041798 -0.010453 -0.14105" mass="0.13" diaginertia="3.5093E-05 1.6948E-05 4.6282E-05" />
         <geom name="left_foot_geom" mesh="left_foot" class="visual" />
-        <geom name="left_foot_geom_c" mesh="left_foot" class="collision" condim="3" friction="2 0.9 0.001" />
+        <geom name="left_foot_geom_c" mesh="left_foot" class="collision" />
       </body>
 
       
@@ -65,7 +65,7 @@
         <body name="right_foot" pos="0 0 0">
           <inertial pos="0.041698 -0.010453 -0.14105" mass="0.13" diaginertia="3.5093E-05 1.6948E-05 4.6282E-05" />
           <geom name="right_foot_geom" mesh="right_foot" class="visual" />
-          <geom name="right_foot_geom_c" mesh="right_foot" class="collision" condim="3" friction="2 0.9 0.001" />
+          <geom name="right_foot_geom_c" mesh="right_foot" class="collision" />
         </body>
 
         
