@@ -8,7 +8,7 @@ old_robot_path = 'Mugatu/mugatu.xml'
 new_robot_path = 'Mugatu/mugatu2.xml'
 new_scene_path = 'Mugatu/scene2.xml'
 
-solref = '0.01 1'
+# solref = '0.01 1'
 # solimp = "0.7 0.9 0.001 0.5 2"
 new_foot_mass = '0.13'
 # condim = '3'
