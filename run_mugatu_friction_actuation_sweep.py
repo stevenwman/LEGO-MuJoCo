@@ -41,7 +41,7 @@ count = 0
 
 for cnt_slide, f_slide in enumerate(f_slide_range):
     for cnt_amp, amp in enumerate(amp_range_rad):
-        for cnt_freq, freq in enumerate(freq_range):
+        for cnt_freq, freq in enumerate(freq_range_rad):
             count += 1
             failed = False
             model = mjc.MjModel.from_xml_path(new_scene_path)

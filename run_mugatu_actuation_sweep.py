@@ -27,7 +27,7 @@ max_time_range = 25
 
 round_to = 3
 
-amp_params, freq_params = (50,100)
+amp_params, freq_params = (25,100)
 amp_range = np.round(np.linspace(24.2 * 0.9, 42.2 * 1.1, amp_params),round_to)
 amp_range_rad = np.deg2rad(amp_range)
 freq_range = np.round(np.linspace(1.3, 1.8, freq_params),round_to)
@@ -39,7 +39,7 @@ param_data = np.zeros((tot_params,3))
 count = 0
 
 for cnt_amp, amp in enumerate(amp_range_rad):
-    for cnt_freq, freq in enumerate(freq_range):
+    for cnt_freq, freq in enumerate(freq_range_rad):
         count += 1
         failed = False
         model = mjc.MjModel.from_xml_path(new_scene_path)

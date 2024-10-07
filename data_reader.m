@@ -5,11 +5,9 @@ clear; clc; close all
 file = readmatrix("act_sweep.csv");
 
 % Example 4-column matrix (replace with your own data)
-data = file; % 100 rows and 4 columns: [color, x, y, z]
-
+data = file;
 nonzero = data~=0;
-
-data = data(nonzero(:,1),:)
+data = data(nonzero(:,1),:);
 
 % Extract columns
 colorData = data(:, 1); % First column for color
