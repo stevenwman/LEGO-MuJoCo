@@ -68,7 +68,7 @@ max_time_range = 25
 # print(model.geom_friction)
 
 for item in model.geom_friction:
-    item[:] = [0.48,0.0526,0.0464]
+    item[:] = [1.8,0.0526,0.0464]
 
 while data.time < max_time_range:
     if viewer.is_alive:

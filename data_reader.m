@@ -1,6 +1,7 @@
 clear; clc; close all
 
-file = readmatrix("friction_sweep.csv");
+% file = readmatrix("friction_sweep.csv");
+file = readmatrix("friction_act_sweep.csv");
 
 % Example 4-column matrix (replace with your own data)
 data = file; % 100 rows and 4 columns: [color, x, y, z]
