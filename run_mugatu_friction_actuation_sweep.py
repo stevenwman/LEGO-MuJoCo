@@ -25,11 +25,13 @@ left_foot_body.find('inertial').set('mass', new_foot_mass)
 robot_tree.write(new_robot_path)
 max_time_range = 25
 
-f_slide_params, amp_params, freq_params = (25,10,25)
-f_slide_range = np.linspace(0.1, 2, f_slide_params)
-amp_range = np.linspace(24.2 * 0.9, 42.2 * 1.1, amp_params)
+round_to = 3
+
+f_slide_params, amp_params, freq_params = (25,10,50)
+f_slide_range = np.round(np.linspace(0.1, 2, f_slide_params),round_to)
+amp_range = np.round(np.linspace(24.2 * 0.9, 42.2 * 1.1, amp_params),round_to)
 amp_range_rad = np.deg2rad(amp_range)
-freq_range = np.linspace(1.3, 1.8, freq_params)
+freq_range = np.round(np.linspace(1.3, 1.8, freq_params),round_to)
 freq_range_rad = np.deg2rad(freq_range)
 
 tot_params = f_slide_params*amp_params*freq_params
@@ -57,7 +59,7 @@ for cnt_slide, f_slide in enumerate(f_slide_range):
                 if data.time > 3:
                     data.actuator("hip_joint_act").ctrl = amp * \
                         np.sin(freq*data.time)
-                if data.qpos[2] < joint_height / 3:
+                if data.qpos[2] < joint_height / 2:
                     print(f"fell! ({count}/{tot_params})")
                     failed = True
                     param_data[count-1,:] = [0,f_slide, amp_range[cnt_amp], freq_range[cnt_freq]]
