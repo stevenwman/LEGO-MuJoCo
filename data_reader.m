@@ -24,9 +24,9 @@ end
 scatter3(x, y, z, 50, colorData, 'filled')
 
 % Add labels
-xlabel('X-axis')
-ylabel('Y-axis')
-zlabel('Z-axis')
+xlabel('param 1')
+ylabel('param 2')
+zlabel('param 3')
 % Add colorbar
 colorbar
-title('3D Scatter Plot with Color Mapped to First Column')
+title('Paramter Sweep')

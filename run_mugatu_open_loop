@@ -20,8 +20,8 @@ joint_height = 0.15
 
 # leg_amp_deg = 26.5348  # 42.2
 leg_amp_deg = 42.2
-leg_amp_deg = 42.313
-hip_freq = 1.684
+leg_amp_deg = 44.367
+hip_freq = 1.78
 hip_omega = 2*np.pi*hip_freq
 # hip_omega = np.sqrt(9.81/(joint_height - com_height))
 
@@ -56,8 +56,8 @@ model.opt.timestep = 0.001  # Set a custom timestep
 
 viewer = mjcv.MujocoViewer(model, data, width=int(1920/2), height=int(1080/2))
 
-for item in model.geom_friction:
-    item[0] = 1.921
+# for item in model.geom_friction:
+#     item[0] = 1.921
 
 mjc.mj_step(model, data)
 leg_amp_rad = np.deg2rad(leg_amp_deg)

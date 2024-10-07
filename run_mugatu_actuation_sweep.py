@@ -27,10 +27,10 @@ max_time_range = 25
 
 round_to = 3
 
-amp_params, freq_params = (25,100)
-amp_range = np.round(np.linspace(24.2 * 0.9, 42.2 * 1.1, amp_params),round_to)
+amp_params, freq_params = (50,100)
+amp_range = np.round(np.linspace(24.2 * 0.75, 42.2 * 1.25, amp_params),round_to)
 amp_range_rad = np.deg2rad(amp_range)
-freq_range = np.round(np.linspace(1.3, 1.8, freq_params),round_to)
+freq_range = np.round(np.linspace(1, 2, freq_params),round_to)
 freq_range_rad = np.deg2rad(freq_range)
 
 tot_params = amp_params*freq_params
