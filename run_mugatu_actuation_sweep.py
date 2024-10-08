@@ -25,17 +25,18 @@ left_foot_body.find('inertial').set('mass', new_foot_mass)
 robot_tree.write(new_robot_path)
 max_time_range = 25
 
-round_to = 3
+round_to = 4
 
-amp_params, freq_params = (50,100)
-amp_range = np.round(np.linspace(24.2 * 0.75, 42.2 * 1.25, amp_params),round_to)
-amp_range_rad = np.deg2rad(amp_range)
-freq_range = np.round(np.linspace(1, 2, freq_params),round_to)
-freq_range_rad = np.deg2rad(freq_range)
+amp_params, freq_params = (50, 100)
+amp_range = np.round(np.linspace(
+    24.2 * 0.75, 42.2 * 1.25, amp_params), round_to)
+amp_range_rad =  np.round(np.deg2rad(amp_range), round_to)
+freq_range = np.round(np.linspace(1, 2, freq_params), round_to)
+freq_range_rad = np.round(2*np.pi*freq_range, round_to)
 
 tot_params = amp_params*freq_params
 
-param_data = np.zeros((tot_params,3))
+param_data = np.zeros((tot_params, 3))
 count = 0
 
 for cnt_amp, amp in enumerate(amp_range_rad):
@@ -57,16 +58,15 @@ for cnt_amp, amp in enumerate(amp_range_rad):
             if data.qpos[2] < joint_height / 2:
                 print(f"fell! ({count}/{tot_params})")
                 failed = True
-                param_data[count-1,:] = [0,amp_range[cnt_amp], freq_range[cnt_freq]]
+                param_data[count-1, :] = [0,
+                                          amp_range[cnt_amp], freq_range[cnt_freq]]
                 break
-            
+
         if not failed:
             print(f"done! ({count}/{tot_params})")
-            dist_traveled = np.linalg.norm(data.qpos[0:2] - trial_init_pos[0:2])
-            param_data[count-1,:] = [dist_traveled,amp_range[cnt_amp], freq_range[cnt_freq]]
+            dist_traveled = np.linalg.norm(
+                data.qpos[0:2] - trial_init_pos[0:2])
+            param_data[count-1, :] = [dist_traveled,
+                                      amp_range[cnt_amp], freq_range[cnt_freq]]
 
 np.savetxt('act_sweep.csv', param_data, delimiter=',')
-
-
-
-            

@@ -27,8 +27,8 @@ max_time_range = 25
 
 round_to = 4
 
-f_slide_params, amp_params, freq_params = (25, 10, 25)
-f_slide_range = np.round(np.linspace(0.2, 2, f_slide_params), round_to)
+f_slide_params, amp_params, freq_params = (25, 15, 25)
+f_slide_range = np.round(np.linspace(0.4, 1.5, f_slide_params), round_to)
 amp_range = np.round(np.linspace(24.2, 42.2, amp_params), round_to)
 amp_range_rad = np.round(np.deg2rad(amp_range), round_to)
 freq_range = np.round(np.linspace(1.2, 1.9, freq_params), round_to)
