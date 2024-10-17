@@ -22,7 +22,7 @@ joint_height = 0.15
 # leg_amp_deg = 42.2
 # hip_freq = 1.5792
 
-f_slide, leg_amp_deg, hip_freq = 0.35, 26.6235, 1.6061
+f_slide, leg_amp_deg, hip_freq = 1.08, 26.6235, 1.6061
 
 round_to = 4
 leg_amp_rad = np.round(np.deg2rad(leg_amp_deg), round_to)
