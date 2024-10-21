@@ -22,12 +22,14 @@ joint_height = 0.15
 # leg_amp_deg = 42.2
 # hip_freq = 1.5792
 
-f_slide, leg_amp_deg = 1, 42.2
+f_slide, leg_amp_deg = 1.5, 33.4
 
 # This param seems pretty good
-solref_stiff, solref_damp, hip_freq = 0.1164, 0.5071, 1.6857
+solref_stiff, solref_damp, hip_freq = 0.05, 0.5071, 1.8
 
-# solref_stiff, solref_damp, hip_freq = 0.12, 0.5, 1.7
+# This one looks REALLY GOOD, but stick slipping
+# f_slide, leg_amp_deg = 1, 23.0929
+# solref_stiff, solref_damp, hip_freq = 0.1164, 0.5071, 1.9596
 round_to = 4
 leg_amp_rad = np.round(np.deg2rad(leg_amp_deg), round_to)
 hip_omega = np.round(2*np.pi*hip_freq, round_to)
@@ -56,7 +58,7 @@ robot_tree.write(new_robot_path)
 
 model = mjc.MjModel.from_xml_path(new_scene_path)
 data = mjc.MjData(model)
-model.opt.timestep = 0.0001  # Set a custom timestep
+model.opt.timestep = 0.002  # Set a custom timestep
 model.opt.enableflags |= 1 << 0  # enable override
 model.opt.o_solref[0] = solref_stiff
 model.opt.o_solref[1] = solref_damp

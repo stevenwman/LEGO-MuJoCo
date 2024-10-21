@@ -39,13 +39,19 @@ tot_params = amp_params*freq_params
 param_data = np.zeros((tot_params, 3))
 count = 0
 
+solref_stiff, solref_damp = (0.1164, 0.5071)
+
 for cnt_amp, amp in enumerate(amp_range_rad):
     for cnt_freq, freq in enumerate(freq_range_rad):
         count += 1
         failed = False
         model = mjc.MjModel.from_xml_path(new_scene_path)
         data = mjc.MjData(model)
-        model.opt.timestep = 0.001
+        # model.opt.timestep = 0.001
+        model.opt.enableflags |= 1 << 0  # enable override
+        model.opt.o_solref[0] = solref_stiff
+        model.opt.o_solref[1] = solref_damp
+        model.opt.timestep = 0.002
 
         mjc.mj_step(model, data)
         trial_init_pos = data.qpos.copy()
