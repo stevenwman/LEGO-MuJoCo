@@ -24,10 +24,10 @@ left_foot_body.find('inertial').set('mass', new_foot_mass)
 robot_tree.write(new_robot_path)
 
 max_time_range = 25
-sol_stiff_params, sol_damp_params, freq_params = (5,5,5)
-sol_stiff_range = np.round(np.linspace(0.005, 0.1, sol_stiff_params), round_to)
-sol_damp_range = np.round(np.linspace(0.5, 2.0, sol_damp_params), round_to)
-freq_range = np.round(np.linspace(1.2, 1.9, freq_params), round_to)
+sol_stiff_params, sol_damp_params, freq_params = (15, 15, 15)
+sol_stiff_range = np.round(np.linspace(0.005, 0.2, sol_stiff_params), round_to)
+sol_damp_range = np.round(np.linspace(0.1, 2.0, sol_damp_params), round_to)
+freq_range = np.round(np.linspace(1.3, 2.2, freq_params), round_to)
 freq_range_rad = np.round(2*np.pi*freq_range, round_to)
 tot_params = sol_stiff_params*sol_damp_params*freq_params
 
@@ -41,7 +41,10 @@ for cnt_stiff, stiffs in enumerate(sol_stiff_range):
             failed = False
             model = mjc.MjModel.from_xml_path(new_scene_path)
             data = mjc.MjData(model)
-            model.opt.timestep = 0.001
+            model.opt.enableflags |= 1 << 0  # enable override
+            model.opt.timestep = 0.0001
+            model.opt.o_solref[0] = stiffs
+            model.opt.o_solref[1] = damps
 
             for item in model.geom_friction:
                 item[0] = f_slide
@@ -57,13 +60,15 @@ for cnt_stiff, stiffs in enumerate(sol_stiff_range):
                 if data.qpos[2] < joint_height / 2:
                     print(f"fell! ({count}/{tot_params})")
                     failed = True
-                    param_data[count-1, :] = [0, stiffs, damps, freq_range[cnt_freq]]
+                    param_data[count-1, :] = [0, stiffs,
+                                              damps, freq_range[cnt_freq]]
                     break
 
             if not failed:
                 print(f"done! ({count}/{tot_params})")
                 dist_traveled = np.linalg.norm(
                     data.qpos[0:2] - trial_init_pos[0:2])
-                param_data[count-1, :] = [dist_traveled, stiffs, damps, freq_range[cnt_freq]]
+                param_data[count-1, :] = [dist_traveled,
+                                          stiffs, damps, freq_range[cnt_freq]]
 
-np.savetxt('contac_freq_sweep.csv', param_data, delimiter=',')
+np.savetxt('contact_freq_sweep.csv', param_data, delimiter=',')

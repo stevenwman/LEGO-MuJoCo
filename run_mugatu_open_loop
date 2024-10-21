@@ -22,8 +22,12 @@ joint_height = 0.15
 # leg_amp_deg = 42.2
 # hip_freq = 1.5792
 
-f_slide, leg_amp_deg, hip_freq = 1.08, 26.6235, 1.6061
+f_slide, leg_amp_deg = 1, 42.2
 
+# This param seems pretty good
+solref_stiff, solref_damp, hip_freq = 0.1164, 0.5071, 1.6857
+
+# solref_stiff, solref_damp, hip_freq = 0.12, 0.5, 1.7
 round_to = 4
 leg_amp_rad = np.round(np.deg2rad(leg_amp_deg), round_to)
 hip_omega = np.round(2*np.pi*hip_freq, round_to)
@@ -51,20 +55,19 @@ left_foot_body.find('inertial').set('mass', new_foot_mass)
 robot_tree.write(new_robot_path)
 
 model = mjc.MjModel.from_xml_path(new_scene_path)
-# model.opt.cone = 0
 data = mjc.MjData(model)
-
-# model.opt.iterations = 550  # Set the number of solver iterations
-# model.opt.solver = 0  # Set solver to PGS
-model.opt.timestep = 0.001  # Set a custom timestep
+model.opt.timestep = 0.0001  # Set a custom timestep
+model.opt.enableflags |= 1 << 0  # enable override
+model.opt.o_solref[0] = solref_stiff
+model.opt.o_solref[1] = solref_damp
 
 viewer = mjcv.MujocoViewer(model, data, width=int(1920/2), height=int(1080/2))
 
-# for item in model.geom_friction:
-#     item[0] = f_slide
+for item in model.geom_friction:
+    item[0] = f_slide
 
 mjc.mj_step(model, data)
-max_time_range = 25
+max_time_range = 50
 
 while data.time < max_time_range:
     if viewer.is_alive:
