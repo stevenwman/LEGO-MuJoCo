@@ -22,10 +22,13 @@ joint_height = 0.15
 # leg_amp_deg = 42.2
 # hip_freq = 1.5792
 
-f_slide, leg_amp_deg = 1.5, 33.4
+f_slide, leg_amp_deg = 1, 42.2
 
 # This param seems pretty good
-solref_stiff, solref_damp, hip_freq = 0.05, 0.5071, 1.8
+# solref_stiff, solref_damp, hip_freq = 0.05, 0.5071, 1.8
+
+# solref_stiff, solref_damp, hip_freq = 0.1721, 0.5071, 1.6857
+solref_stiff, solref_damp, hip_freq = 0.05, 0.5, 1.75
 
 # This one looks REALLY GOOD, but stick slipping
 # f_slide, leg_amp_deg = 1, 23.0929
@@ -58,10 +61,11 @@ robot_tree.write(new_robot_path)
 
 model = mjc.MjModel.from_xml_path(new_scene_path)
 data = mjc.MjData(model)
-model.opt.timestep = 0.002  # Set a custom timestep
+model.opt.timestep = 0.001  # Set a custom timestep
 model.opt.enableflags |= 1 << 0  # enable override
-model.opt.o_solref[0] = solref_stiff
-model.opt.o_solref[1] = solref_damp
+# model.opt.o_solref[0] = solref_stiff
+# model.opt.o_solref[1] = solref_damp
+# model.opt.o_solimp[:] = [0.95, 0.99, 0.001, 0.1, 2]
 
 viewer = mjcv.MujocoViewer(model, data, width=int(1920/2), height=int(1080/2))
 
@@ -70,13 +74,26 @@ for item in model.geom_friction:
 
 mjc.mj_step(model, data)
 max_time_range = 50
+wait_time = 3
+
+# store actuator setpoints empty array and append later
+actuator_setpoints = np.zeros((0, 1))
+# store actuator actual pos empty array and append later
+actuator_actual_pos = np.zeros((0, 1))
 
 while data.time < max_time_range:
     if viewer.is_alive:
         mjc.mj_step(model, data)
-        if data.time > 3:
-            data.actuator("hip_joint_act").ctrl = leg_amp_rad * \
-                np.sin(hip_omega*data.time)
+        if data.time > wait_time:
+            # data.actuator("hip_joint_act").ctrl = leg_amp_rad * \
+            #     np.sin(np.pi/2*np.cos(hip_omega*(data.time-wait_time)))
+            b = 1
+            cos_wave = np.cos(hip_omega*(data.time-wait_time))
+            wave_val = np.sqrt((1+b**2)/(1+(b**2)*cos_wave**2))*cos_wave
+            data.actuator("hip_joint_act").ctrl = leg_amp_rad * wave_val
+            actuator_setpoints = np.append(
+                actuator_setpoints, data.actuator("hip_joint_act").ctrl)
+            actuator_actual_pos = np.append(actuator_actual_pos, data.qpos[7])
         # data.joint("").xanchor to find joint location
         # data.subtree_com() to find com location
         viewer.render()
@@ -85,3 +102,9 @@ while data.time < max_time_range:
 print("done!")
 
 viewer.close()
+
+# plot actuator setpoints and actual pos
+plt.plot(actuator_setpoints, label='setpoints')
+plt.plot(actuator_actual_pos, label='actual pos')
+plt.legend()
+plt.show()
