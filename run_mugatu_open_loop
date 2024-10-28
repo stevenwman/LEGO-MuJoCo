@@ -22,13 +22,16 @@ joint_height = 0.15
 # leg_amp_deg = 42.2
 # hip_freq = 1.5792
 
-f_slide, leg_amp_deg = 1, 42.2
+leg_amp_deg, hip_freq = 42.2, 1.45
+
+f_slide, f_spin, f_roll = 1, 0.5, 0.1
 
 # This param seems pretty good
 # solref_stiff, solref_damp, hip_freq = 0.05, 0.5071, 1.8
 
 # solref_stiff, solref_damp, hip_freq = 0.1721, 0.5071, 1.6857
-solref_stiff, solref_damp, hip_freq = 0.05, 0.5, 1.75
+solref_stiff, solref_damp = 0.005, 25
+solimp_vals = [0.99, 0.999, 0.0001, 0.5, 2]
 
 # This one looks REALLY GOOD, but stick slipping
 # f_slide, leg_amp_deg = 1, 23.0929
@@ -61,16 +64,23 @@ robot_tree.write(new_robot_path)
 
 model = mjc.MjModel.from_xml_path(new_scene_path)
 data = mjc.MjData(model)
+
+# for item in model.geom_friction:
+#     item[0] = 2
+
 model.opt.timestep = 0.001  # Set a custom timestep
 model.opt.enableflags |= 1 << 0  # enable override
-# model.opt.o_solref[0] = solref_stiff
-# model.opt.o_solref[1] = solref_damp
-# model.opt.o_solimp[:] = [0.95, 0.99, 0.001, 0.1, 2]
+model.opt.cone = 1
+roll_mult = 1
+model.opt.o_friction = [f_slide, f_slide, f_spin,
+                        roll_mult * f_roll, roll_mult * f_roll]
+model.opt.solver = 1
+model.opt.o_solref[0] = solref_stiff
+model.opt.o_solref[1] = solref_damp
+model.opt.o_solimp[:] = solimp_vals
 
 viewer = mjcv.MujocoViewer(model, data, width=int(1920/2), height=int(1080/2))
 
-for item in model.geom_friction:
-    item[0] = f_slide
 
 mjc.mj_step(model, data)
 max_time_range = 50
@@ -85,15 +95,19 @@ while data.time < max_time_range:
     if viewer.is_alive:
         mjc.mj_step(model, data)
         if data.time > wait_time:
-            # data.actuator("hip_joint_act").ctrl = leg_amp_rad * \
+            # acutator_control = leg_amp_rad * \
             #     np.sin(np.pi/2*np.cos(hip_omega*(data.time-wait_time)))
+
             b = 1
-            cos_wave = np.cos(hip_omega*(data.time-wait_time))
-            wave_val = np.sqrt((1+b**2)/(1+(b**2)*cos_wave**2))*cos_wave
-            data.actuator("hip_joint_act").ctrl = leg_amp_rad * wave_val
+            wave = np.cos(hip_omega*(data.time-wait_time))
+            wave_val = np.sqrt((1+b**2)/(1+(b**2)*wave**2))*wave
+            acutator_control = leg_amp_rad * wave_val
+
+            data.actuator("hip_joint_act").ctrl = acutator_control
             actuator_setpoints = np.append(
-                actuator_setpoints, data.actuator("hip_joint_act").ctrl)
+                actuator_setpoints, acutator_control)
             actuator_actual_pos = np.append(actuator_actual_pos, data.qpos[7])
+
         # data.joint("").xanchor to find joint location
         # data.subtree_com() to find com location
         viewer.render()

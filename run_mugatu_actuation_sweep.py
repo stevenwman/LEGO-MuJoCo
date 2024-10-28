@@ -30,7 +30,7 @@ round_to = 4
 amp_params, freq_params = (50, 100)
 amp_range = np.round(np.linspace(
     24.2 * 0.75, 42.2 * 1.25, amp_params), round_to)
-amp_range_rad =  np.round(np.deg2rad(amp_range), round_to)
+amp_range_rad = np.round(np.deg2rad(amp_range), round_to)
 freq_range = np.round(np.linspace(1, 2, freq_params), round_to)
 freq_range_rad = np.round(2*np.pi*freq_range, round_to)
 
@@ -48,10 +48,10 @@ for cnt_amp, amp in enumerate(amp_range_rad):
         model = mjc.MjModel.from_xml_path(new_scene_path)
         data = mjc.MjData(model)
         # model.opt.timestep = 0.001
-        model.opt.enableflags |= 1 << 0  # enable override
-        model.opt.o_solref[0] = solref_stiff
-        model.opt.o_solref[1] = solref_damp
-        model.opt.timestep = 0.002
+        # model.opt.enableflags |= 1 << 0  # enable override
+        # model.opt.o_solref[0] = solref_stiff
+        # model.opt.o_solref[1] = solref_damp
+        model.opt.timestep = 0.001
 
         mjc.mj_step(model, data)
         trial_init_pos = data.qpos.copy()

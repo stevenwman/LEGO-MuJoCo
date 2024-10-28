@@ -19,7 +19,7 @@
     <mesh scale="1 1 1" />
     <geom type="mesh" />
     <joint damping="1.084" armature="0.045" frictionloss="0.03" />
-    <position kp="50" kv="1.9" ctrlrange="-1.6 1.6" />
+    <position kp="35" kv="1.9" ctrlrange="-1.6 1.6" />
     <default class="visual">
       <geom material="black" contype="0" conaffinity="0" group="2" />
     </default>
