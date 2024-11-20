@@ -13,7 +13,7 @@ new_foot_mass = '0.13'
 com_height = 0.066
 joint_height = 0.15
 
-leg_amp_deg, hip_freq = 30, 1.7
+leg_amp_deg, hip_freq = 42, 1.5
 
 
 round_to = 4

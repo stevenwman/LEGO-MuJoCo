@@ -2,5 +2,6 @@
   "documentId": "bf016333eb87030ff171a82f",
   "assemblyName": "fullasm",
   "outputFormat": "urdf",
-  "useFixedLinks": true
+  "mergeSTLs": "all",
+  "mergeSTLsCollisions": true
 }
