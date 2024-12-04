@@ -20,20 +20,21 @@
     <mesh name="right_arm" file="right_arm.stl" />
     <mesh name="left_foot" file="left_foot.stl" />
     <mesh name="left_leg" file="left_leg.stl" />
-    <texture name="texplane" type="2d" builtin="checker" rgb1=".0 .0 .0" rgb2=".8 .8 .8" width="100"
+    <!-- <texture name="texplane" type="2d" builtin="checker" rgb1=".0 .0 .0" rgb2=".8 .8 .8"
+    width="100"
       height="100" />
-    <material name="matplane" reflectance="0." texture="texplane" texrepeat="1 1" texuniform="true" />
+    <material name="matplane" reflectance="0." texture="texplane" texrepeat="1 1" texuniform="true" /> -->
     <material name="visualgeom" rgba="0.5 0.9 0.2 1" />
   </asset>
 
   <worldbody>
-    <light directional="true" diffuse="0.4 0.4 0.4" specular="0.1 0.1 0.1" pos="0 0 5.0"
+    <!-- <light directional="true" diffuse="0.4 0.4 0.4" specular="0.1 0.1 0.1" pos="0 0 5.0"
       dir="0 0 -1" castshadow="false" />
     <light directional="true" diffuse="0.6 0.6 0.6" specular="0.2 0.2 0.2" pos="0 0 4" dir="0 0 -1" />
     <geom name="ground" type="plane" pos="0 0 0" size="100 100 0.001" quat="1 0 0 0"
       material="matplane" condim="3" conaffinity="15" />
     <camera name="fixed" pos="0 -3.0 0.714817" xyaxes="1 0 0 0 0 1" />
-    <camera name="track" mode="trackcom" pos="0 -3.0 0.714817" xyaxes="1 0 0 0 0 1" />
+    <camera name="track" mode="trackcom" pos="0 -3.0 0.714817" xyaxes="1 0 0 0 0 1" /> -->
     <body name="root" pos="0 0 0.22481700000000002" quat="1 0 0 0">
       <freejoint name="root" />
       <site name="imu" size="0.01" pos="0 0 0" />

@@ -8,12 +8,13 @@ old_robot_path = 'Mugatu/mugatu.xml'
 new_robot_path = 'Mugatu/mugatu2.xml'
 new_scene_path = 'Mugatu/scene2.xml'
 new_scene_path = 'my-robot-fixed/robot.xml'
+new_scene_path = 'my-robot-fixed/scene3.xml'
 
 new_foot_mass = '0.13'
 com_height = 0.066
 joint_height = 0.15
 
-leg_amp_deg, hip_freq = 42, 1.5
+leg_amp_deg, hip_freq = 42, 1.7
 
 
 round_to = 4
@@ -23,7 +24,7 @@ hip_omega = np.round(2*np.pi*hip_freq, round_to)
 model = mjc.MjModel.from_xml_path(new_scene_path)
 data = mjc.MjData(model)
 
-model.opt.timestep = 0.001  # Set a custom timestep
+# model.opt.timestep = 0.001  # Set a custom timestep
 # model.opt.enableflags |= 1 << 0  # enable override
 # model.opt.cone = 1
 
