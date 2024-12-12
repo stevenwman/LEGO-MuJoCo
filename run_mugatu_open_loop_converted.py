@@ -56,6 +56,7 @@ while data.time < max_time_range:
             # data.actuator("hip").ctrl = acutator_control
             actuator_setpoints = np.append(
                 actuator_setpoints, acutator_control)
+            # print(data.qpos)
             actuator_actual_pos = np.append(actuator_actual_pos, data.qpos[7])
 
         # data.joint("").xanchor to find joint location
