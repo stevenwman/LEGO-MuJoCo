@@ -15,7 +15,7 @@
   <default>
     <!-- <mesh scale="1 1 1" /> -->
     <!-- <joint damping="1.084" armature="0.045" frictionloss="0.03" /> -->
-    <position kp="35" kv="1.9" ctrlrange="-1.6 1.6" />
+    <position kp="350" kv="19" ctrlrange="-1.6 1.6" />
     <!-- <geom condim="4" contype="1" conaffinity="15" friction="0.9 0.2 0.2" solref="0.001 2" /> -->
   </default>
 
