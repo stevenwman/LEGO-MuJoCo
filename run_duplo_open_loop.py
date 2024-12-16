@@ -27,7 +27,13 @@ wait_time = 1
 # store actuator setpoints empty array and append later
 actuator_setpoints = np.zeros((0, 1))
 actuator_actual_pos = np.zeros((0, 1))
-j_pos = np.zeros((1, 4))
+actuator_torque = np.zeros((0, 1))
+joint_vel = np.zeros((0, 1))
+# j_pos = np.zeros((1, 4))
+
+joint_name = "hip"
+joint_id = mjc.mj_name2id(model, mjc.mjtObj.mjOBJ_JOINT, joint_name)
+dof_addr = model.jnt_dofadr[joint_id]
 
 while data.time < max_time_range:
     if viewer.is_alive:
@@ -41,11 +47,14 @@ while data.time < max_time_range:
             acutator_control = leg_amp_rad * wave_val
 
             data.actuator("hip_joint_act").ctrl = acutator_control
-            # data.actuator("hip").ctrl = acutator_control
-            actuator_setpoints = np.append(
-                actuator_setpoints, acutator_control)
-            # print(data.qpos)
-            actuator_actual_pos = np.append(actuator_actual_pos, data.qpos[7])
+            actuator_setpoints = np.append(actuator_setpoints,
+                                           acutator_control)
+            actuator_actual_pos = np.append(actuator_actual_pos,
+                                            data.qpos[7])
+            # adding 6 because body wrenches are also included in qfrc_actuator
+            actuator_torque = np.append(actuator_torque,
+                                        data.qfrc_actuator[dof_addr])
+            joint_vel = np.append(joint_vel, data.qvel[dof_addr])
 
         # data.joint("").xanchor to find joint location
         # j_pos = np.vstack([j_pos, data.qpos[3:7]])
@@ -62,8 +71,19 @@ print("done!")
 viewer.close()
 
 # plot actuator setpoints and actual pos
+plt.figure()
 plt.plot(actuator_setpoints, label='setpoints')
 plt.plot(actuator_actual_pos, label='actual pos')
+plt.legend()
+
+# plot joint torque
+plt.figure()
+plt.plot(actuator_torque, label='joint torque')
+plt.legend()
+
+# plot joint velocity
+plt.figure()
+plt.plot(joint_vel, label='joint velocity')
 plt.legend()
 plt.show()
 
