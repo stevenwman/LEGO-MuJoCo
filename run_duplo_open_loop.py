@@ -62,7 +62,7 @@ while data.time < max_time_range:
         # # take mean along each column
         # print(np.mean(j_pos, axis=0))
 
-        print(data.time)
+        print(f"{data.time:.3f}")
         viewer.render()
     else:
         break
