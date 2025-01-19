@@ -1,53 +1,49 @@
 <mujoco model="onshape">
-  <compiler angle="radian" eulerseq="zyx" autolimits="true" />
+    <compiler angle="radian" eulerseq="zyx" autolimits="true" />
 
-  <asset>
-    <mesh name="battery" file="battery.stl" />
-    <mesh name="part_1" file="part_1.stl" scale="1.1 1 1" />
-    <mesh name="leg" file="leg.stl" />
-    <mesh name="arm" file="arm.stl" />
-    <mesh name="hip" file="hip.stl" />
-  </asset>
+    <asset>
+        <mesh name="battery" file="battery.stl" />
+        <mesh name="part_1" file="part_1.stl" scale="1.1 1 1" />
+        <mesh name="leg" file="leg.stl" />
+        <mesh name="arm" file="arm.stl" />
+        <mesh name="hip" file="hip.stl" />
+    </asset>
 
-  <default>
-    <!-- <mesh scale="1 1 1" /> -->
-    <position kp="3000" kv="220" ctrlrange="-1.6 1.6" />
-  </default>
+    <default>
+        <!-- <mesh scale="1 1 1" /> -->
+        <position kp="3000" kv="220" ctrlrange="-1.6 1.6" />
+    </default>
 
-  <worldbody>
-    <body name="leg_1" pos="0 0 1.2"
-      quat="9.96563288e-01 -8.25810815e-02  4.39900536e-05  5.54941396e-05">
-      <freejoint />
-      <geom mass="0.73" pos="0.84 -0.0625 -0.5725" quat="0 0 0 -1" type="mesh"
-        mesh="battery" />
-      <geom mass="0.63" pos="0.13658 -0.0789026 -0.375" quat="0 0 1 0" type="mesh"
-        mesh="part_1" />
-      <geom mass="0.25" pos="0 -0.0665 -1" quat="0 0 0 1" type="mesh"
-        mesh="leg" />
-      <geom mass="0.2" pos="0.805 -0.025 -0.4975" quat="0 0 0 -1" type="mesh"
-        mesh="arm" />
-      <body name="leg_2" pos="0.5 -0.0125 -0.0125" quat="0.5 0.5 -0.5 -0.5">
-        <joint name="hip" pos="0 0 0" axis="0 0 1" range="-0.785398 0.785398" />
-        <geom mass="0.2" pos="0 0 0.805" quat="0.5 -0.5 0.5 0.5" type="mesh"
-          mesh="hip" />
-        <geom mass="0.2" pos="-0.0125 -0.485 0.805" quat="0.5 -0.5 0.5 0.5" type="mesh"
-          mesh="arm" />
-        <geom mass="0.63" pos="0.0665974 -0.3625 0.13658" quat="0.5 0.5 0.5 -0.5" type="mesh"
-          mesh="part_1" />
-        <geom mass="0.73" pos="0.05 -0.56 0.74" quat="0.5 -0.5 -0.5 -0.5" type="mesh"
-          mesh="battery" />
-        <geom mass="0.25" pos="0.054 -0.9875 -0.025" quat="0.5 -0.5 -0.5 -0.5" type="mesh"
-          mesh="leg" />
-      </body>
-    </body>
-  </worldbody>
+    <visual>
+        <global offwidth="1920" offheight="1080"/>
+    </visual>
 
-  <contact>
-    <exclude body1="leg_1" body2="leg_2" />
-  </contact>
+    <worldbody>
+        <body name="leg_1" pos="0 0 1.2"
+        quat="9.96563288e-01 -8.25810815e-02  4.39900536e-05  5.54941396e-05">
+        <freejoint />
+        <geom mass="0.73" pos="0.84 -0.0625 -0.5725" quat="0 0 0 -1" type="mesh" mesh="battery" />
+        <geom mass="0.63" pos="0.13658 -0.0789026 -0.375" quat="0 0 1 0" type="mesh" mesh="part_1" />
+        <geom mass="0.25" pos="0 -0.0665 -1" quat="0 0 0 1" type="mesh" mesh="leg" />
+        <geom mass="0.2" pos="0.805 -0.025 -0.4975" quat="0 0 0 -1" type="mesh" mesh="arm" />
+        <body name="leg_2" pos="0.5 -0.0125 -0.0125" quat="0.5 0.5 -0.5 -0.5">
+            <joint name="hip" pos="0 0 0" axis="0 0 1" range="-0.785398 0.785398" />
+            <geom mass="0.2" pos="0 0 0.805" quat="0.5 -0.5 0.5 0.5" type="mesh" mesh="hip" />
+            <geom mass="0.2" pos="-0.0125 -0.485 0.805" quat="0.5 -0.5 0.5 0.5" type="mesh" mesh="arm" />
+            <geom mass="0.63" pos="0.0665974 -0.3625 0.13658" quat="0.5 0.5 0.5 -0.5" type="mesh" mesh="part_1" />
+            <geom mass="0.73" pos="0.05 -0.56 0.74" quat="0.5 -0.5 -0.5 -0.5" type="mesh" mesh="battery" />
+            <geom mass="0.25" pos="0.054 -0.9875 -0.025" quat="0.5 -0.5 -0.5 -0.5" type="mesh"
+            mesh="leg" />
+        </body>
+        </body>
+    </worldbody>
 
-  <actuator>
-    <position name="hip_joint_act" joint="hip" ctrlrange="-1.6 1.6" forcerange="-25 25" />
-  </actuator>
+    <contact>
+        <exclude body1="leg_1" body2="leg_2" />
+    </contact>
+
+    <actuator>
+        <position name="hip_joint_act" joint="hip" ctrlrange="-1.6 1.6" forcerange="-25 25" />
+    </actuator>
 
 </mujoco>

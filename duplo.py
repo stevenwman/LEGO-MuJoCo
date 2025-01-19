@@ -39,7 +39,6 @@ class Duplo:
 
     def apply_sine_ctrl(self, waittime=1, b=1):
         if self.data.time < waittime: return
-        
         # b defines how sharp a sine wave is, higher the sharper
         wave = np.sin(self.hip_omega*(self.data.time-waittime))
         wave_val = np.sqrt((1+b**2)/(1+(b**2)*wave**2))*wave
@@ -103,7 +102,10 @@ class Duplo:
         next_output_time = 0
         # Lists to store data
         self.robot_frames = []  # Store rendered frames for robot video
-        self.plot_data = {"time": [], "setpoint": [], "actual_pos": [], "torque": []}
+        self.plot_data = {"time"       : [], 
+                          "setpoint"   : [], 
+                          "actual_pos" : [], 
+                          "torque"     : []}
 
         loop = range(int(self.simtime // self.model.opt.timestep))
         for _ in loop:
@@ -120,108 +122,98 @@ class Duplo:
             self.plot_data["torque"].append(self.actuator_torque)
 
     def generate_robot_video(self, output_path="robot_walking.mp4"):
-        from moviepy.editor import ImageSequenceClip
+        from moviepy import ImageSequenceClip
         clip = ImageSequenceClip(self.robot_frames, fps=self.v_fps)
         clip.write_videofile(output_path, codec="libx264")
         print(f"Robot video saved to {output_path}")
+        return output_path
 
-    def generate_plot_video(self, output_path="live_plot.mp4", fps=30):
+    def generate_plot_video(self, output_path, fps, stack_keys):
         import pyqtgraph as pg
-        from pyqtgraph.Qt import QtWidgets, QtGui
-        from moviepy.editor import ImageSequenceClip
+        from pyqtgraph.Qt import QtWidgets
+        from moviepy import ImageSequenceClip
         import numpy as np
 
         # Initialize PyQtGraph app
         app = QtWidgets.QApplication([])
 
-        # Create a PyQtGraph layout
-        titles = ["Actuator Setpoint", "Actuator Actual Position", "Actuator Torque"]
-        data_keys = ["setpoint", "actual_pos", "torque"]
+        # Create the layout window
+        win = pg.GraphicsLayoutWidget(title="Live Plot Video")
 
-        win = pg.GraphicsLayoutWidget()
-        win.setWindowTitle("Live Plot Video")
+        # Assign colors to the curves
+        colors = [
+            (255, 255, 255),  # White
+            (0, 255, 0),      # Green
+            (0, 0, 255),      # Blue
+            (255, 165, 0),    # Orange
+        ]
 
-        # Automatically adjust spacing and scaling
-        win.ci.setSpacing(10)  # Minimal manual spacing
-        plots = []  # To store plot objects for later reference
-        curves = []  # To store curve objects for later updates
-
-        # Dynamically create plots
-        for i, title in enumerate(titles):
-            plot = win.addPlot(row=i, col=0, title=title)  # Specify row=i for vertical stacking
-            plot.setLabel("bottom", "Time (s)", color="white", size="10pt")
-            plot.setLabel("left", title, color="white", size="10pt")
+        # Create plots for each group and store their curve objects
+        plots_and_curves = []  # List of (plot, [curves]) tuples
+        for row, group in enumerate(stack_keys):  # Use rows for vertical alignment
+            plot = win.addPlot(row=row, col=0, title=", ".join(group))
+            plot.setLabels(left="Value", bottom="Time (s)")
             plot.showGrid(x=True, y=True, alpha=0.5)
-            plot.setTitle(title, color="white", size="12pt")
+            plot.addLegend(offset=(10, 10))  # Add legend with a slight offset
 
-            # Adjust the left axis label offset
-            plot.getAxis('left').setWidth(75)
+            curves = []
+            for idx, key in enumerate(group):
+                color = colors[idx % len(colors)]  # Cycle through colors
+                curve = plot.plot(
+                    pen=pg.mkPen(color=color, width=2),
+                    name=key  # Add the name to show in the legend
+                )
+                curves.append(curve)
 
-            curve = plot.plot(pen=pg.mkPen(color=(0, 255, 0), width=2))
-            plots.append(plot)
-            curves.append(curve)
+            plots_and_curves.append((plot, curves))
 
-        # Compute the global min and max values for time and each data key
+        app.processEvents()  # Ensure all pending events are processed
+
+        # Make plotting range static using max and min data values
         time_min, time_max = min(self.plot_data["time"]), max(self.plot_data["time"])
-        data_ranges = {
-            key: (min(self.plot_data[key]), max(self.plot_data[key])) for key in data_keys
-        }
+        group_ranges = []
+        for group in stack_keys:
+            group_min = min(min(self.plot_data[key]) for key in group)
+            group_max = max(max(self.plot_data[key]) for key in group)
+            group_ranges.append((group_min, group_max))
 
         # Set the range for each plot once
-        for j, plot in enumerate(plots):
-            data_min, data_max = data_ranges[data_keys[j]]
+        for (plot, _), (data_min, data_max) in zip(plots_and_curves, group_ranges):
             plot.setRange(xRange=(time_min, time_max), yRange=(data_min, data_max))
 
-        # Force auto-adjustment to fit all subplots
-        win.ci.layout.setContentsMargins(10, 10, 10, 10)  # Remove extra margins
-        win.ci.layout.activate()  # Update layout to reflect changes
-        win.updateGeometry()  # Trigger automatic size adjustment
-        win.show()  # Ensure everything is displayed correctly
-        app.processEvents()  # Allow layout adjustments
+        # Resize window and fit layout
+        win.resize(800, 300 * len(stack_keys))  # Adjust height based on number of plots
+        win.show()
+        app.processEvents()
 
-        # Dynamically determine the optimal window size
-        width = 800
-        # height = win.sizeHint().height()
-        # win.resize(width, height)
-
-        total_height = 300 * len(titles)
-        win.resize(width, total_height)
-
-
-        # Generate frames for the video
+        # Generate video frames
+        plot_frames = []
         output_interval = 1 / fps
         next_output_time = 0
-        plot_frames = []
 
-        for i in range(len(self.plot_data["time"]) - 1):
-            if next_output_time <= self.plot_data["time"][i + 1]:
-                # Update curves with new data
-                for j, key in enumerate(data_keys):
-                    curves[j].setData(self.plot_data["time"][:i + 1], self.plot_data[key][:i + 1])
+        for i, t in enumerate(self.plot_data["time"]):
+            if t >= next_output_time:
+                # Update curves within each group
+                for (plot, curves), group in zip(plots_and_curves, stack_keys):
+                    for curve, key in zip(curves, group):
+                        curve.setData(self.plot_data["time"][:i + 1], self.plot_data[key][:i + 1])
 
-                # Render the widget directly to a QImage
-                image = QtGui.QImage(win.size().width(), win.size().height(), QtGui.QImage.Format_RGB888)
-                painter = QtGui.QPainter(image)
-                win.render(painter)
-                painter.end()
-
-                # Convert the QImage to a numpy array
-                width = image.width()
-                height = image.height()
-                ptr = image.bits()
-                ptr.setsize(width * height * 3)
-                img_array = np.array(ptr).reshape((height, width, 3))
-                plot_frames.append(img_array)
+                # Render the widget to an image
+                img = win.grab().toImage()
+                buffer = img.bits().asarray(img.byteCount())
+                plot_frames.append(np.array(buffer).reshape((img.height(), img.width(), 4))[:, :, :3])
 
                 next_output_time += output_interval
 
-        # Close the PyQtGraph window
+        # Close the window
         win.close()
 
-        # Save the plot video
+        # Create video from frames
         clip = ImageSequenceClip(plot_frames, fps=fps)
         clip.write_videofile(output_path, codec="libx264")
         print(f"Plot video saved to {output_path}")
+        return output_path
+
 
 
     def close(self):
@@ -234,6 +226,7 @@ if __name__ == "__main__":
     parser.add_argument("-t", "--time", type=float, default=5, help="time to run the simulation")
     parser.add_argument("-g", "--gui", action="store_true", help="enable GUI")
     parser.add_argument("-vfps", "--video_fps", type=int, default=30, help="fps of the video")
+    parser.add_argument("-stk", "--stack_videos", action="store_true", help="stack videos")
     args = vars(parser.parse_args())
 
     duplo = Duplo(args)
@@ -245,9 +238,28 @@ if __name__ == "__main__":
     v_dir = f"data/videos/{args['name']}"
     os.makedirs(v_dir, exist_ok=True)
 
-    duplo.generate_plot_video(output_path=f"{v_dir}/live_plot.mp4", fps=30)
-    duplo.generate_robot_video(output_path=f"{v_dir}/robot_walking.mp4")
-    
+    stack_keys = [["setpoint", "actual_pos"], ["torque"]]
+    plot_video_path = duplo.generate_plot_video(output_path=f"{v_dir}/live_plot.mp4", fps=30, stack_keys=stack_keys)
+    robot_video_path = duplo.generate_robot_video(output_path=f"{v_dir}/robot_walking.mp4")
+
+    if args["stack_videos"]:
+        from moviepy import VideoFileClip, clips_array
+
+        # Load your video files
+        videoL = VideoFileClip(plot_video_path)
+        videoR = VideoFileClip(robot_video_path)
+
+        # Ensure both videos have the same height
+        if videoL.h != videoR.h:
+            max_height = max(videoL.h, videoR.h)
+            videoL = videoL.resized(height=max_height)
+            videoR = videoR.resized(height=max_height)
+
+        # Combine videos side by side
+        final_video = clips_array([[videoL, videoR]])
+        # Write the output to a file
+        final_video.write_videofile(f"{v_dir}/stacked.mp4", codec="libx264")
+
     print("All videos generated!")
 
     duplo.close()
