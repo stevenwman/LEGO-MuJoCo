@@ -10,6 +10,7 @@ import os
 os.environ['QT_QPA_PLATFORM'] = "offscreen"
 print(f"Using Qt platform: {os.environ.get('QT_QPA_PLATFORM')}")
 
+
 class MjcSim:
     def __init__(self, model_path: str, config: dict) -> None:
         """ Initialize the Mujoco simulation environment."""
@@ -148,15 +149,15 @@ class Duplo(MjcSim):
             self.step_sim()
             self.data_log()
 
-            print(f"time: {self.data.time:.3f}")
-
             if callbacks:
                 for name, func in callbacks.items():
                     func(self)  # Call function dynamically
 
+
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtWidgets
-from moviepy import ImageSequenceClip
+from moviepy import ImageSequenceClip, clips_array
+import cv2
 
 class Recorder:
     """Class to record and generate videos from simulation data."""
@@ -172,16 +173,16 @@ class Recorder:
         self.video_fps = video_fps
         self.output_interval = 1 / video_fps
         self.next_vid_output_time = 0
-        self.plot_data = {}
+        self.plt_data = {}
         self.robot_frames = []
-        self.plot_attributes = plot_attributes  # { "varName": {"title": "plotTitle", "color": (G,B,R), "line_style": "--"} }
-        self.plot_structure = plot_structure  # [[xvar, yvar1, yvar2], [xvar2, yvar3], ...]
+        self.plt_attr = plot_attributes  # { "varName": {"title": "plotTitle", "color": (G,B,R), "line_style": "--"} }
+        self.plt_struc = plot_structure  # [[xvar, yvar1, yvar2], [xvar2, yvar3], ...]
         # Initialize empty lists for each variable in plot_attributes
-        for var in self.plot_attributes:
-            self.plot_data[var] = []
+        for var in self.plt_attr:
+            self.plt_data[var] = []
 
         # assert time is always a key in the plot_attributes
-        assert "time" in self.plot_attributes, "Time variable not in plot_attributes!"
+        assert "time" in self.plt_attr, "Time variable not in plot_attributes!"
 
         self.color_dict = {
             "white"       : (255, 255, 255), 
@@ -193,12 +194,12 @@ class Recorder:
 
     def record_plot_data(self, sim: MjcSim) -> None:
         """Log specified variables."""
-        # self.plot_data['time'].append(sim.data.time) # Always log time
+        # self.plt_data['time'].append(sim.data.time) # Always log time
 
-        for var in self.plot_attributes:
+        for var in self.plt_attr:
             value = sim.data.time if var == "time" else getattr(sim, var, None)
             assert value is not None, f"Variable {var} not found."
-            self.plot_data[var].append(value)
+            self.plt_data[var].append(value)
 
     def record_frame(self, sim: MjcSim) -> None:
         """Record robot frames at specified intervals."""
@@ -206,107 +207,144 @@ class Recorder:
             self.robot_frames.append(sim.get_image())
             self.next_vid_output_time += self.output_interval
 
-    def export_clip(self, frames: list, vid_type: str, output_path: str=None) -> None:
+    def export_clip(self, 
+                    frames: list, 
+                    vid_type: str, 
+                    output_path: str) -> None:
         """Export video from frames."""
         clip = ImageSequenceClip(frames, fps=self.video_fps)
-        clip.write_videofile(output_path, codec="libx264")
+        from proglog import TqdmProgressBarLogger
+        custom_logger = TqdmProgressBarLogger(logged_bars='all', print_messages=False)
+        clip.write_videofile(output_path, 
+                             codec="h264_nvenc",  # NVIDIA GPU encoding (for NVENC-compatible GPUs)
+                             preset="fast",       # Adjust for speed vs. quality
+                             logger=custom_logger)
+
         print(f"{vid_type} Video saved to {output_path}")
 
-    def generate_robot_video(self, output_path: str=None) -> None:
+    def generate_robot_video(self, output_path: str) -> str:
         """Create a video from stored robot frames."""
         assert self.robot_frames is not [], "No frames recorded!"
         self.export_clip(self.robot_frames, "Scene", output_path)
+        return output_path
 
     def setup_plot(self) -> None:
         """Setup the plot format for the recorded data."""
         self.app = QtWidgets.QApplication([])
         self.win = pg.GraphicsLayoutWidget(title="Live Plot Video")
 
+        plot_w = 1080 # Width of the plot
+        plot_hs = [] # Heights of the plots
+
         self.plots_and_curves = []
         # Iterate over plot structure to create subplots
-        for row, subplot_vars in enumerate(self.plot_structure):
-            x_var = subplot_vars[0]  # First variable is the x-axis
-            y_vars = subplot_vars[1:]  # Remaining variables are y-axes
-            plot_title_list = [self.plot_attributes[y]['title'] for y in y_vars]
+        for row, subplot_vars in enumerate(self.plt_struc):
+            x = subplot_vars[0]  # First variable is the x-axis
+            ys = subplot_vars[1:]  # Remaining variables are y-axes
+            plot_title_list = [self.plt_attr[y]['title'] for y in ys]
             plot = self.win.addPlot(row=row, col=0, title=", ".join(plot_title_list)) # Plots stacked vertically
         
-            # Check y-data units to determine axis label and aspect ratio
-            if all(self.plot_attributes[y]['unit'] == self.plot_attributes[y_vars[0]]['unit'] for y in y_vars):
-                ylabel = (f"Value ({self.plot_attributes[y_vars[0]]['unit']})")
-                # if x and y are same unit then aspect ratio should be locked
-                # if self.plot_attributes[x_var]['unit'] != 's':
+            # Create appropriate x/y labels for the plot
+            first_y_unit = self.plt_attr[ys[0]]['unit']
+            if len(ys) == 1:
+                ylabel = (f"{self.plt_attr[ys[0]]['title']}"
+                          f"({self.plt_attr[ys[0]]['unit']})")
+            elif all(self.plt_attr[y]['unit'] == first_y_unit for y in ys):
+                ylabel = (f"Values ({self.plt_attr[ys[0]]['unit']})")
 
-            xlabel = (f"{self.plot_attributes[x_var]['title']}"
-                    f"({self.plot_attributes[x_var]['unit']})")
+            xlabel = (f"{self.plt_attr[x]['title']}"
+                      f"({self.plt_attr[x]['unit']})")
             plot.setLabels(left=ylabel, bottom=xlabel)
             plot.showGrid(x=True, y=True, alpha=0.5)
             plot.addLegend(offset=(10, 10))
 
+            # Square aspect ratio for non-time plots, else 2:1
+            plot_h = plot_w // 2 if self.plt_attr[x]['unit'] == 's' else plot_w
+            plot.setPreferredSize(plot_w, plot_h)
+            plot_hs.append(plot_h)
+
             curves = []
-            for idx, y_var in enumerate(y_vars):
-                attr_info = self.plot_attributes[y_var]      
+            for idx, y in enumerate(ys):
+                attrs = self.plt_attr[y]      
                 curve_color = self.color_dict[self.colors[idx % len(self.colors)]] # Cycle through colors          
-                curve = plot.plot(pen=pg.mkPen(color=curve_color, width=2), name=attr_info['title'])
-                curves.append((curve, y_var))
-            self.plots_and_curves.append((plot, curves, x_var))
+                curve = plot.plot(pen=pg.mkPen(color=curve_color, width=2), name=attrs['title'])
+                curves.append((curve, y))
+            self.plots_and_curves.append((plot, curves, x))
 
-        self.app.processEvents()
-
-        print(self.plots_and_curves)
-
-        for (plot, curves, x_var) in self.plots_and_curves:
-            xmin, xmax = min(self.plot_data[x_var]), max(self.plot_data[x_var])
-            ymin = min(min(self.plot_data[y]) for _, y in curves)
-            ymax = max(max(self.plot_data[y]) for _, y in curves)
-
-            # print them
-            print(f"X-axis range: {xmin} to {xmax}")
-            print(f"Y-axis range: {ymin} to {ymax}")
-
+        for (plot, curves, x) in self.plots_and_curves:
+            xmin, xmax = min(self.plt_data[x]), max(self.plt_data[x])
+            ymin = min(min(self.plt_data[y]) for _, y in curves)
+            ymax = max(max(self.plt_data[y]) for _, y in curves)
             plot.setRange(xRange=(xmin, xmax), yRange=(ymin, ymax))
 
-        self.win.resize(800, 300 * len(self.plot_structure))
+        self.win.resize(plot_w, sum(plot_hs))
         self.win.show()
         self.app.processEvents()
 
-    def generate_plot_video(self, output_path: str=None) -> None:
+    def generate_plot_video(self, output_path: str) -> str:
         """Create a video from stored plot data."""
         self.setup_plot()
-        plot_frames = []
+        self.plot_frames = []
         next_plot_output_time = 0
 
-        for i, t in enumerate(self.plot_data['time']):
+        for i, t in enumerate(self.plt_data['time']):
             if t < next_plot_output_time: continue
             
-            for (_, curves, x_var) in self.plots_and_curves:
-                x_data = self.plot_data[x_var][:i + 1]
-                for curve, y_var in curves:
-                    curve.setData(x_data, self.plot_data[y_var][:i + 1])
+            for (_, curves, x) in self.plots_and_curves:
+                x_data = self.plt_data[x][:i + 1]
+                for curve, y in curves:
+                    curve.setData(x_data, self.plt_data[y][:i + 1])
 
             img = self.win.grab().toImage()
-            buffer = img.bits().asarray(img.byteCount())
-            plot_frames.append(np.array(buffer).reshape((img.height(), img.width(), 4))[:, :, :3])
+            buffer = np.array(img.bits().asarray(img.byteCount()))
+            buffer.shape = (img.height(), img.width(), 4)
+            self.plot_frames.append(buffer[:, :, :3])
             next_plot_output_time += self.output_interval
 
         self.win.close()
-        self.export_clip(plot_frames, "Plot", output_path)
+        self.export_clip(self.plot_frames, "Plot", output_path)
+        return output_path
+
+    def stack_video_frames(self, 
+                           left_frames: list, 
+                           right_frames: list, 
+                           output_path: str, 
+                           pad: bool=True):
+        """Stack two lists of frames side by side, using either padding (default) or resizing."""
+        def adjust_height(frame, target_h, pad_mode):
+            """Helper to adjust frame height using either padding or resizing."""
+            h, w, _ = frame.shape
+            if h == target_h:
+                return frame
+            if pad_mode:
+                pad_width = (target_h - h) // 2
+                return np.pad(frame, ((pad_width, pad_width), (0, 0), (0, 0)))
+            return cv2.resize(frame, (w * target_h // h, target_h))  # Preserve aspect ratio
+
+        target_h = max(left_frames[0].shape[0], right_frames[0].shape[0])  # Determine max height
+        combined_frames = [cv2.hconcat([adjust_height(left, target_h, pad),
+                                        adjust_height(right, target_h, pad)])
+                                        for left, right in zip(left_frames, right_frames)]
+        self.export_clip(combined_frames, "Combined", output_path)
 
 
-# if __name__ == "__main__":
-#     parser = argparse.ArgumentParser(description="duplo sim")
-#     parser.add_argument("-n", "--name", type=str, default="duplo_sim_default", help="name of the video")
-#     parser.add_argument("-t", "--sim_time", type=float, default=5, help="total simulation time")
-#     parser.add_argument("-gui", "--gui", action="store_true", help="enable GUI")
-#     parser.add_argument("-vfps", "--video_fps", type=int, default=30, help="fps of the video")
-#     parser.add_argument("-stk", "--stack_videos", action="store_true", help="stack videos")
-#     args = vars(parser.parse_args())
+from tqdm import tqdm
 
-#     duplo = Duplo(args)
+class ProgressCallback:
+    """Tracks simulation progress using tqdm."""
+    def __init__(self, total_time: float) -> None:
+        self.pbar = tqdm(total=total_time, desc="Simulation Progress", unit="s")
 
-#     # Run simulation and store data
-#     duplo.run_sim()
-#     duplo.close()
-
+    def update(self, sim: MjcSim) -> None:
+        """Update the progress bar using the simulation time step."""
+        curr_time = round(sim.data.time, 5) 
+        self.pbar.n = min(curr_time, self.pbar.total)  # Prevents overshooting
+        self.pbar.refresh()
+        if curr_time >= self.pbar.total:
+            self.pbar.close()
+            print("Simulation finished.")
+            
+            
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="duplo sim")
@@ -333,10 +371,12 @@ if __name__ == "__main__":
 
     duplo = Duplo(args)
     recorder = Recorder(args['video_fps'], plot_attributes, plot_structure)
+    progress_cb = ProgressCallback(args["sim_time"])  # Initialize progress tracker
 
     callbacks_dict = {
         "record_frame"      : recorder.record_frame,
-        "record_plot_data"  : recorder.record_plot_data
+        "record_plot_data"  : recorder.record_plot_data,
+        "progress_bar"      : progress_cb.update
         }
 
     duplo.run_sim(callbacks=callbacks_dict)
@@ -347,3 +387,7 @@ if __name__ == "__main__":
 
     recorder.generate_plot_video(output_path=f"{v_dir}/live_plot.mp4")
     recorder.generate_robot_video(output_path=f"{v_dir}/robot_walking.mp4")
+    recorder.stack_video_frames(recorder.plot_frames, 
+                                 recorder.robot_frames,  
+                                 output_path=f"{v_dir}/padded.mp4",
+                                 pad=True)
