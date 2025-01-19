@@ -1,7 +1,0 @@
-{
-  "documentId": "bf016333eb87030ff171a82f",
-  "assemblyName": "fullasm",
-  "outputFormat": "urdf",
-  "mergeSTLs": "all",
-  "mergeSTLsCollisions": true
-}
