@@ -1,13 +1,10 @@
-import argparse
 import numpy as np
 import os
 from src.sim import MjcSim, ProgressCallback
-from src.sim_args import arg_parser
-from src.recorder import Recorder
+from utils.sim_args import arg_parser
+from utils.recorder import Recorder
 from typing import Callable
-
-os.environ['QT_QPA_PLATFORM'] = "offscreen"
-print(f"Using Qt platform: {os.environ.get('QT_QPA_PLATFORM')}")
+from utils.xml_handler import MJCFHandler
 
 class Duplo(MjcSim):
     def __init__(self, config: dict) -> None:
@@ -18,6 +15,12 @@ class Duplo(MjcSim):
             'distance': 5,
             'xyaxis': [-1, 0, 0, 0, 0, 1],
         }
+
+        self.mjcf_handler = MJCFHandler(scene_path)
+        self.mjcf_handler.update_mass()
+        self.mjcf_handler.export_xml_scene()
+        scene_path = self.mjcf_handler.new_scene_path
+
         super().__init__(scene_path, config)
         self.ctrl_joint_names = ['hip']
         n_ctrl_joints = self.setup_ctrl_joints()
@@ -28,7 +31,7 @@ class Duplo(MjcSim):
 
         self.leg_amp_deg = 35
         self.leg_amp_rad = np.deg2rad(self.leg_amp_deg)
-        self.pend_len = 0.63
+        self.pend_len = 0.63 # default from a while backs
 
         self.step_sim() # Take the first sim step to initialize the data
 
@@ -63,6 +66,8 @@ class Duplo(MjcSim):
         """Run the simulation for the specified time."""
         self.pend_len = self.pendulum_length()[0]
         self.hip_omega = np.sqrt(9.81 / self.pend_len)
+
+        print(f"hip freq: {self.hip_omega/(2*np.pi)}")
 
         loop = range(int(self.simtime // self.model.opt.timestep))
         for _ in loop:

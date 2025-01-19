@@ -5,16 +5,18 @@ import sys
 import time
 from tqdm import tqdm
 
-
 class MjcSim:
     def __init__(self, model_path: str, config: dict) -> None:
         """ Initialize the Mujoco simulation environment."""
         self.simtime = config['sim_time']
         self.gui = config['gui']
         self.v_fps = config['video_fps']
-
+        
         self.model = mujoco.MjModel.from_xml_path(model_path)
         self.data = mujoco.MjData(self.model)
+
+        total_mass = np.sum(self.model.body_mass)
+        print(f"Total mass: {total_mass} kg")
 
         self.setup_gui()
         self.ctrl_joint_names = [] # names of the joints to control
@@ -55,7 +57,7 @@ class MjcSim:
         if self.gui:
             self.viewer = mujoco.viewer.launch_passive(self.model, self.data)
             for attr in dir(self.camera):
-                if not attr.startswith("__"): # copy camera public attributes
+                if not attr.startswith("_"): # copy camera public attributes
                     setattr(self.viewer.cam, attr, getattr(self.camera, attr))
 
     def get_image(self):
@@ -86,10 +88,14 @@ class MjcSim:
 class ProgressCallback:
     """Tracks simulation progress using tqdm."""
     def __init__(self, total_time: float) -> None:
-        self.pbar = tqdm(total=total_time, desc="Simulation Progress", unit="s")
+        self.started = False
+        self.total_time = total_time
 
     def update(self, sim: MjcSim) -> None:
         """Update the progress bar using the simulation time step."""
+        if not self.started: 
+            self.pbar = tqdm(total=self.total_time, desc="Simulation Progress", unit="s")
+            self.started = True
         curr_time = round(sim.data.time, 5) 
         self.pbar.n = min(curr_time, self.pbar.total)  # Prevents overshooting
         self.pbar.refresh()

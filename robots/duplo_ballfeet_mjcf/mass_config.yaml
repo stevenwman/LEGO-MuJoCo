@@ -1,0 +1,15 @@
+arm:
+  mass: 0.2
+  scale: 1
+battery:
+  mass: 0.73
+  scale: 1
+hip:
+  mass: 0.2
+  scale: 1
+leg:
+  mass: 0.25
+  scale: 1
+part_1:
+  mass: 0.63
+  scale: 1

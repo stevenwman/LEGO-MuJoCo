@@ -10,17 +10,16 @@
     </asset>
 
     <default>
-        <!-- <mesh scale="1 1 1" /> -->
+        
         <position kp="3000" kv="220" ctrlrange="-1.6 1.6" />
     </default>
 
     <visual>
-        <global offwidth="1920" offheight="1080"/>
+        <global offwidth="1920" offheight="1080" />
     </visual>
 
     <worldbody>
-        <body name="leg_1" pos="0 0 1.2"
-        quat="9.96563288e-01 -8.25810815e-02  4.39900536e-05  5.54941396e-05">
+        <body name="leg_1" pos="0 0 1.2" quat="9.96563288e-01 -8.25810815e-02  4.39900536e-05  5.54941396e-05">
             <freejoint />
             <geom mass="0.73" pos="0.84 -0.0625 -0.5725" quat="0 0 0 -1" type="mesh" mesh="battery" />
             <geom mass="0.63" pos="0.13658 -0.0789026 -0.375" quat="0 0 1 0" type="mesh" mesh="part_1" />
@@ -32,8 +31,7 @@
                 <geom mass="0.2" pos="-0.0125 -0.485 0.805" quat="0.5 -0.5 0.5 0.5" type="mesh" mesh="arm" />
                 <geom mass="0.63" pos="0.0665974 -0.3625 0.13658" quat="0.5 0.5 0.5 -0.5" type="mesh" mesh="part_1" />
                 <geom mass="0.73" pos="0.05 -0.56 0.74" quat="0.5 -0.5 -0.5 -0.5" type="mesh" mesh="battery" />
-                <geom mass="0.25" pos="0.054 -0.9875 -0.025" quat="0.5 -0.5 -0.5 -0.5" type="mesh"
-                mesh="leg" />
+                <geom mass="0.25" pos="0.054 -0.9875 -0.025" quat="0.5 -0.5 -0.5 -0.5" type="mesh" mesh="leg" />
             </body>
         </body>
     </worldbody>
