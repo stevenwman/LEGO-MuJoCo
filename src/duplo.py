@@ -31,7 +31,7 @@ class Duplo(MjcSim):
         self.dof_addr = self.ctrl_dof_addrs[0]
         self.action = None
 
-        self.leg_amp_deg = 35
+        self.leg_amp_deg = 45
         self.leg_amp_rad = np.deg2rad(self.leg_amp_deg)
         self.pend_len = 0.63 # default from a while backs
 
@@ -68,8 +68,8 @@ class Duplo(MjcSim):
 
         if self.action is None: # Initialize the control signal
             # start a queue 
-            self.p_hist = np.zeros(10)
-            self.p_ref_hist = np.zeros(10)
+            self.p_hist = np.zeros(2)
+            self.p_ref_hist = np.zeros(2)
             self.p_hist[0] = self.data.qpos[7]
             self.p_ref_hist[0] = self.reference
             self.action = 0
@@ -84,7 +84,6 @@ class Duplo(MjcSim):
         # calculate the derivative
         p_err = self.p_ref_hist[0] - self.p_hist[0]
         p_err_hist = self.p_ref_hist - self.p_hist
-        # p_err_d = (self.p_ref_hist[0] - self.p_ref_hist[1]) / self.model.opt.timestep
         # average the derivative over the entire queue
         p_err_d = np.mean(np.diff(p_err_hist) / self.model.opt.timestep)
 
