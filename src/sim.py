@@ -31,7 +31,7 @@ class MjcSim:
 
     def setup_gui(self):
         """Setup the GUI for the simulation."""
-        self.width, self.height = 1920, 1080
+        self.width, self.height = 1920 // 2, 1080 // 2 
         self.renderer = mujoco.Renderer(self.model, self.height, self.width)
         self.camera = mujoco.MjvCamera()
 
@@ -74,10 +74,14 @@ class MjcSim:
     def step_sim(self):
         """Step the simulation forward by one time step."""
         mujoco.mj_step(self.model, self.data)
+
         if self.gui: 
             self.viewer.sync()
             time.sleep(self.model.opt.timestep)
             if not self.viewer.is_running(): sys.exit()
+
+    def actaution_override(self):
+        raise NotImplementedError("Override this method in the child class.")
 
     def close(self):
         """Close the simulation environment."""

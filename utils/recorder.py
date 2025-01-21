@@ -68,10 +68,10 @@ class Recorder:
         custom_logger = TqdmProgressBarLogger(logged_bars='all', print_messages=False)
         clip.write_videofile(output_path, 
                              codec="libx264", 
-                             preset="fast",
+                             preset="medium",
                              logger=custom_logger)
-
         print(f"{vid_type} Video saved to {output_path}")
+
 
     def generate_robot_video(self, output_path: str) -> str:
         """Create a video from stored robot frames."""
@@ -84,7 +84,7 @@ class Recorder:
         self.app = QtWidgets.QApplication([])
         self.win = pg.GraphicsLayoutWidget(title="Live Plot Video")
 
-        plot_w = 1080 # Width of the plot
+        plot_w = 540 # Width of the plot
         plot_hs = [] # Heights of the plots
 
         self.plots_and_curves = []
@@ -162,6 +162,7 @@ class Recorder:
                            output_path: str, 
                            pad: bool=True):
         """Stack two lists of frames side by side, using either padding (default) or resizing."""
+        # only padding right now, stretching keeps killing the process due to excessive memory usage
         def adjust_height(frame, target_h, pad_mode):
             """Helper to adjust frame height using either padding or resizing."""
             h, w, _ = frame.shape
