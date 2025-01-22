@@ -11,6 +11,7 @@ class MjcSim:
         self.simtime = config['sim_time']
         self.gui = config['gui']
         self.v_fps = config['video_fps']
+        self.config = config
         
         self.model = mujoco.MjModel.from_xml_path(model_path)
         self.data = mujoco.MjData(self.model)
@@ -18,16 +19,20 @@ class MjcSim:
         total_mass = np.sum(self.model.body_mass)
         print(f"Total mass: {total_mass} kg")
 
-        self.setup_gui()
+        if self.config['record']: self.setup_gui()
         self.ctrl_joint_names = [] # names of the joints to control
 
     def setup_ctrl_joints(self) -> int:
         """Convert actuator joint names to joint ids and dof addresses."""
-        self.ctrl_joint_ids = [mujoco.mj_name2id(self.model, 
-                                                 mujoco.mjtObj.mjOBJ_JOINT, 
-                                                 j_name) for j_name in self.ctrl_joint_names]
         self.ctrl_dof_addrs = [self.model.jnt_dofadr[j_id] for j_id in self.ctrl_joint_ids]
         return len(self.ctrl_joint_ids)
+    
+    @property
+    def ctrl_joint_ids(self) -> list[int]:
+        ctrl_joint_ids = [mujoco.mj_name2id(self.model, 
+                                            mujoco.mjtObj.mjOBJ_JOINT, 
+                                            j_name) for j_name in self.ctrl_joint_names]
+        return ctrl_joint_ids
 
     def setup_gui(self):
         """Setup the GUI for the simulation."""
@@ -85,7 +90,7 @@ class MjcSim:
 
     def close(self):
         """Close the simulation environment."""
-        self.renderer.close()
+        if self.config['record']: self.renderer.close()
         if self.gui: self.viewer.close()
 
 
@@ -94,15 +99,22 @@ class ProgressCallback:
     def __init__(self, total_time: float) -> None:
         self.started = False
         self.total_time = total_time
+        self.next_update_time = 0
 
     def update(self, sim: MjcSim) -> None:
         """Update the progress bar using the simulation time step."""
         if not self.started: 
             self.pbar = tqdm(total=self.total_time, desc="Simulation Progress", unit="s")
+            self.next_update_gap = sim.simtime / 100
             self.started = True
-        curr_time = round(sim.data.time, 5) 
-        self.pbar.n = min(curr_time, self.pbar.total)  # Prevents overshooting
-        self.pbar.refresh()
+        
+        curr_time = round(sim.data.time, 5)        
+
+        if curr_time >= self.next_update_time:
+            self.pbar.n = min(curr_time, self.pbar.total)  # Prevents overshooting
+            self.pbar.refresh()
+            self.next_update_time += self.next_update_gap 
+
         if curr_time >= self.pbar.total:
             self.pbar.close()
-            print("Simulation finished.")
+            print(f"{curr_time}s of simulation finished.")

@@ -1,10 +1,11 @@
+from collections import deque
 import mujoco
 import numpy as np
 import os
 from src.sim import MjcSim, ProgressCallback
 from utils.sim_args import arg_parser
 from utils.recorder import Recorder
-from typing import Callable
+from typing import Callable, Any
 from utils.xml_handler import MJCFHandler
 
 class Duplo(MjcSim):
@@ -31,11 +32,26 @@ class Duplo(MjcSim):
         self.dof_addr = self.ctrl_dof_addrs[0]
         self.action = None
 
-        self.leg_amp_deg = 45
-        self.leg_amp_rad = np.deg2rad(self.leg_amp_deg)
-        self.pend_len = 0.63 # default from a while backs
+        # Get joint ID and qpos index
+        self.hip_qpod_addr = self.model.jnt_qposadr[self.ctrl_joint_ids[0]]
 
+        self.init_act_params(config["act_dict"])
         self.step_sim() # Take the first sim step to initialize the data
+
+    def init_act_params(self, act_dict: dict[str, Any]={}) -> None: 
+        # Default values
+        self.Kp = 0
+        self.Kd = 0
+        self.leg_amp_deg = 0
+        # self.pend_len = 0.63 # default from a while back
+        for k,v in act_dict.items(): 
+            setattr(self, k, v)
+            print(f"{k} set to {getattr(self, k)}. (desired value: {v})")
+
+    @property
+    def leg_amp_rad(self) -> float:
+        """Calculate the angular frequency of the hip joint."""
+        return np.deg2rad(self.leg_amp_deg) 
 
     def pendulum_length(self) -> tuple[float, float]:
         """Calculate the length and z offset of the pendulum."""
@@ -57,41 +73,33 @@ class Duplo(MjcSim):
         """Apply the calculated control signal to the hip joint."""
         self.data.actuator("hip_joint_act").ctrl = self.action
 
-    def calculate_position_ctrl(self) -> None:
+    def calculate_mujoco_position_ctrl(self) -> None:
         """Calculate the position control signal for the hip joint."""
         self.action = self.reference
 
-    def calculate_pd_ctrl(self) -> None:
+    def calculate_pd_ctrl(self, hist_window: int=2) -> None:
         """Calculate the PID control signal for the hip joint."""
-
         self.calculate_sine_reference()
 
         if self.action is None: # Initialize the control signal
             # start a queue 
-            self.p_hist = np.zeros(2)
-            self.p_ref_hist = np.zeros(2)
-            self.p_hist[0] = self.data.qpos[7]
-            self.p_ref_hist[0] = self.reference
+            self.p_hist = deque([self.data.qpos[self.hip_qpod_addr]], maxlen=hist_window)  # Fixed-size queue
+            self.p_ref_hist = deque([self.reference], maxlen=hist_window)  # Fixed-size queue
             self.action = 0
             return
             
         # update the queue
-        self.p_hist = np.roll(self.p_hist, 1)
-        self.p_ref_hist = np.roll(self.p_ref_hist, 1)
-        self.p_hist[0] = self.data.qpos[7]
-        self.p_ref_hist[0] = self.reference
-
+        self.p_hist.append(self.data.qpos[self.hip_qpod_addr])
+        self.p_ref_hist.append(self.reference)
         # calculate the derivative
-        p_err = self.p_ref_hist[0] - self.p_hist[0]
-        p_err_hist = self.p_ref_hist - self.p_hist
+        p_err_hist = np.array(self.p_ref_hist) - np.array(self.p_hist)
+
         # average the derivative over the entire queue
+        p_err = p_err_hist[-1] # most recent entry is at the end
         p_err_d = np.mean(np.diff(p_err_hist) / self.model.opt.timestep)
 
         # calculate the control signal
-        Kp = 20
-        Kd = -10
-        self.action = Kp * p_err + Kd * p_err_d
-        # should implement damping and saturation
+        self.action = self.Kp * p_err + self.Kd * p_err_d
 
     def data_log(self) -> None:
         """Log the data from the simulation."""
@@ -107,7 +115,6 @@ class Duplo(MjcSim):
         self.hip_omega = np.sqrt(9.81 / self.pend_len)
 
         print(f"hip freq: {self.hip_omega/(2*np.pi)}")
-
         loop = range(int(self.simtime // self.model.opt.timestep))
 
         for _ in loop:
@@ -117,14 +124,13 @@ class Duplo(MjcSim):
             self.step_sim()
             self.data_log()
 
-            print(f"Time: {self.data.time:.3f}")
+            # print(f"Time: {self.data.time:.3f}")
 
             if callbacks:
                 for name, func in callbacks.items():
                     func(self)  # Call function dynamically
         
-
-if __name__ == "__main__":
+def main():
     args = arg_parser("duplo")
 
     # Define the variables and their properties
@@ -142,10 +148,16 @@ if __name__ == "__main__":
         ["actuator_actual_pos", "actuator_torque"],  # Subplot 3: X = angle, Y = torque
     ]
 
+    args['act_dict'] = {
+        'Kp': 15,
+        'Kd': 12,
+        'leg_amp_deg': 30,
+    }
+
     duplo = Duplo(args)
-    progress_cb = ProgressCallback(args["sim_time"])  # Initialize progress tracker
+    progress_cb = ProgressCallback(args['sim_time'])  # Initialize progress tracker
     callbacks_dict = {
-        # "progress_bar" : progress_cb.update
+        "progress_bar" : progress_cb.update
         }
 
     if args["record"]:
@@ -164,3 +176,14 @@ if __name__ == "__main__":
         recorder.stack_video_frames(recorder.plot_frames, 
                                     recorder.robot_frames,  
                                     output_path=f"{v_dir}/combined.mp4")
+        
+if __name__ == "__main__":
+    # from pyinstrument import Profiler
+
+    # profiler = Profiler()
+    # profiler.start()
+
+    main()
+
+    # profiler.stop()
+    # print(profiler.output_text(unicode=True, color=True))
