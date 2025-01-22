@@ -20,7 +20,7 @@ class MjcSim:
         print(f"Total mass: {total_mass} kg")
 
         if self.config['record']: self.setup_gui()
-        self.ctrl_joint_names = [] # names of the joints to control
+        self.ctrl_joint_names = None # names of the joints to control
 
     def setup_ctrl_joints(self) -> int:
         """Convert actuator joint names to joint ids and dof addresses."""

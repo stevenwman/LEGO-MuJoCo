@@ -9,11 +9,6 @@
         <mesh name="hip" file="hip.stl" />
     </asset>
 
-    <!-- <default> -->
-        <!-- <mesh scale="1 1 1" /> -->
-        <!-- <position kp="3000" kv="220" ctrlrange="-1.6 1.6" /> -->
-    <!-- </default> -->
-
     <visual>
         <global offwidth="1920" offheight="1080"/>
     </visual>

@@ -9,11 +9,6 @@
         <mesh name="hip" file="hip.stl" />
     </asset>
 
-    
-        
-        
-    
-
     <visual>
         <global offwidth="1920" offheight="1080" />
     </visual>

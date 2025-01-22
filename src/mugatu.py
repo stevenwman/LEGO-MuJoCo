@@ -7,14 +7,14 @@ from utils.recorder import Recorder
 from typing import Callable, Any
 from utils.xml_handler import MJCFHandler
 
-class Duplo(MjcSim):
+class Mugatu(MjcSim):
     def __init__(self, config: dict) -> None:
-        """Initialize the Duplo simulation environment."""
-        scene_path = f"{config['robot_dir']}/duplo_ballfeet_mjcf/scene_motor.xml"
+        """Initialize the Mugatu simulation environment."""
+        scene_path = f"{config['robot_dir']}/mugatu_mjcf/scene_motor.xml"
         self.camera_params = {
-            'tracking': "leg_1",
-            'distance': 5,
-            'xyaxis': [-1, 0, 0, 0, 0, 1],
+            'tracking': "right_leg",
+            'distance': 0.5,
+            'xyaxis': [1, 0, 0, 0, 0, 1],
         }
 
         self.mjcf_handler = MJCFHandler(scene_path)
@@ -128,7 +128,7 @@ class Duplo(MjcSim):
                     func(self)  # Call function dynamically
         
 def main():
-    args = arg_parser("Duplo Sim Args")
+    args = arg_parser("Mugatu Sim Args")
 
     # Define the variables and their properties
     plot_attributes = {
@@ -150,11 +150,11 @@ def main():
     # dictionary of control parameters
     args['ctrl_dict'] = {
         'Kp': 15,
-        'Kd': 12,
+        'Kd': 0.5,
         'leg_amp_deg': 35,
     }
 
-    robot = Duplo(args)
+    robot = Mugatu(args)
     progress_cb = ProgressCallback(args['sim_time'])  # Initialize progress tracker
     callbacks_dict = {
         "progress_bar" : progress_cb.update

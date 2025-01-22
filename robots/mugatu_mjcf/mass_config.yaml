@@ -1,0 +1,21 @@
+left_arm:
+  mass: 0.06219204786445871
+  scale: 1
+left_foot:
+  mass: 0.13
+  scale: 1
+left_leg:
+  mass: 0.07376726465798017
+  scale: 1
+right_arm:
+  mass: 0.059112686530484994
+  scale: 1
+right_battery:
+  mass: 0.15
+  scale: 1
+right_foot:
+  mass: 0.13
+  scale: 1
+right_leg:
+  mass: 0.0529787507353837
+  scale: 1

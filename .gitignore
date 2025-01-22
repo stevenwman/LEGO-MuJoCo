@@ -1,3 +1,4 @@
 **/.vscode/**
 onshape_mjcf-master/
 **/__pycache__/**
+MUJOCO_LOG.TXT
