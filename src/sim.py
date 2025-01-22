@@ -19,7 +19,7 @@ class MjcSim:
         total_mass = np.sum(self.model.body_mass)
         print(f"Total mass: {total_mass} kg")
 
-        if self.config['record']: self.setup_gui()
+        if self.config['record'] or self.config['gui']: self.setup_gui()
         self.ctrl_joint_names = None # names of the joints to control
 
     def setup_ctrl_joints(self) -> int:

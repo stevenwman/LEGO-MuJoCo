@@ -2,9 +2,10 @@ from collections import deque
 import numpy as np
 import os
 from src.sim import MjcSim, ProgressCallback
-from utils.sim_args import arg_parser
-from utils.recorder import Recorder
+import time
 from typing import Callable, Any
+from utils.recorder import Recorder
+from utils.sim_args import arg_parser
 from utils.xml_handler import MJCFHandler
 
 class Zippy(MjcSim):
@@ -24,7 +25,14 @@ class Zippy(MjcSim):
 
         super().__init__(scene_path, config)
 
-        self.model.opt.timestep = 0.001
+        self.model.opt.enableflags |= 1 << 0  # enable override
+        self.model.opt.timestep = 0.0005
+        self.model.opt.o_solref[0] = -20000
+        self.model.opt.o_solref[1] = -200
+        # self.model.opt.o_solimp[0] = 0.98 
+        # self.model.opt.o_solimp[1] = 0.99 
+        # self.model.opt.o_solimp[2] = 0.0005
+
         self.get_hip_idx()
         self.init_ctrl_params(config["ctrl_dict"])
         self.step_sim() # Take the first sim step to initialize the data
@@ -96,12 +104,19 @@ class Zippy(MjcSim):
         print(f"hip freq: {self.hip_omega/(2*np.pi)}")
         loop = range(int(self.simtime // self.model.opt.timestep))
 
-        for _ in loop:
-            self.calculate_sine_reference()
+        for i in loop:
+            self.calculate_sine_reference(b=10)
             self.direct_ctrl()
             self.apply_ctrl()
             self.step_sim()
             self.data_log()
+
+            # time.sleep(self.model.opt.timestep * 1)
+
+            if i % 2 == 0:  # Update the progress bar every 2 steps
+                print(f"Time: {self.data.time:.5f} / {self.simtime} s", end="\r")
+            else:
+                print(f"Time: {self.data.time:.5f} s", end=" -> ")
 
             if callbacks:
                 for name, func in callbacks.items():
@@ -114,16 +129,17 @@ def main():
     plot_attributes = {
         "actuator_actual_pos"   : {"title": "Joint Angle", "unit": "Rad"},
         "actuator_torque"       : {"title": "Joint Torque", "unit": "Nm"},
-        "actuator_setpoints"    : {"title": "Joint Setpoint", "unit": "Rad"},
+        "reference"             : {"title": "Joint Setpoint", "unit": "Rad"},
         "actuator_speed"        : {"title": "Joint Speed", "unit": "Rad/s"},
         "time"                  : {"title": "Time", "unit": "s"},  
     }
 
     # Define the structure of the plots
     plot_structure = [
-        ["time", "actuator_actual_pos", "actuator_setpoints"],  # Subplot 1: X = time, Y = angle & setpoint
+        ["time", "actuator_actual_pos"],  # Subplot 1: X = time, Y = angle & setpoint
+        ["time", "reference"],  # Subplot 1: X = time, Y = angle & setpoint
         ["time", "actuator_torque"],  # Subplot 2: X = time, Y = torque
-        ["actuator_actual_pos", "actuator_torque"],  # Subplot 3: X = angle, Y = torque
+        # ["actuator_actual_pos", "actuator_torque"],  # Subplot 3: X = angle, Y = torque
         # ["actuator_speed", "actuator_torque"],
     ]
 
@@ -131,14 +147,14 @@ def main():
     args['ctrl_dict'] = {
         # 'Kp': 0.1,
         # 'Kd': 0.00007,
-        'leg_amp_deg': np.rad2deg(0.01059232775) / 5,
-        'hip_omega': 52,
+        'leg_amp_deg': - np.rad2deg(0.01059232775) / 3,
+        'hip_omega': 8.5 * 2 * np.pi,
     }
 
     robot = Zippy(args)
     progress_cb = ProgressCallback(args['sim_time'])  # Initialize progress tracker
     callbacks_dict = {
-        "progress_bar" : progress_cb.update
+        # "progress_bar" : progress_cb.update
         }
 
     if args["record"]:

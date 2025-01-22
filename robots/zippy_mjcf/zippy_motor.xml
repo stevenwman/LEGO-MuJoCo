@@ -38,11 +38,13 @@
         </body>
     </worldbody>
 
-    <contact>
+    <!-- <contact>
         <exclude body1="r_leg" body2="l_leg" />
-    </contact>
+    </contact> -->
 
     <actuator>
-        <motor name="hip_joint_act" joint="hip" forcerange="-0.01059232775 0.01059232775"/>
+        <!-- <motor name="hip_joint_act" joint="hip" forcerange="-0.01059232775 0.01059232775"/> -->
+
+        <motor name="hip_joint_act" joint="hip"/>
     </actuator>
 </mujoco>

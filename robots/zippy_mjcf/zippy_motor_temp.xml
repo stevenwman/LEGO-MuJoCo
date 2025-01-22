@@ -21,28 +21,28 @@
     <worldbody>
         <body name="r_leg" pos="0 0 0.02496501">
             <freejoint />
-            <geom mass="0.0003" pos="0.0253843 0.0156727 0.00858911" quat="1 0 0 0" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="driver" />
-            <geom mass="0.000705" pos="0.0254272 0.015691 0.00858911" quat="1 0 0 0" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="hip_motor" />
-            <geom mass="0.00124" pos="-0.003613 0.0169705 0.00694314" quat="0.707067 -0.00745631 0.536852 0.460206" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="hand_weight" />
-            <geom mass="0.00029" pos="0.0253272 0.015541 0.00858911" quat="1 0 0 0" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="l_arm" />
-            <geom mass="0.011475" pos="0.0254272 0.015791 0.00858911" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="battery" />
-            <geom mass="0.001585" pos="0.0254272 0.015691 0.00858911" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="r_leg" />
+            <geom mass="0.0006" pos="0.0253843 0.0156727 0.00858911" quat="1 0 0 0" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="driver" />
+            <geom mass="0.00141" pos="0.0254272 0.015691 0.00858911" quat="1 0 0 0" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="hip_motor" />
+            <geom mass="0.00248" pos="-0.003613 0.0169705 0.00694314" quat="0.707067 -0.00745631 0.536852 0.460206" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="hand_weight" />
+            <geom mass="0.00058" pos="0.0253272 0.015541 0.00858911" quat="1 0 0 0" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="l_arm" />
+            <geom mass="0.02" pos="0.0254272 0.015791 0.00858911" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="battery" />
+            <geom mass="0.00317" pos="0.0254272 0.015691 0.00858911" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="r_leg" />
             <body name="l_leg" pos="0.005875 0 0" quat="0.5 0.5 0.5 0.5">
                 <joint name="hip" pos="0 0 0" axis="0 0 1" range="-0.349066 0.349066" />
-                <geom mass="0.000235" pos="0.0157485 0.00866577 0.0205022" quat="0.5 -0.5 -0.5 -0.5" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="r_arm" />
-                <geom mass="0.00201" pos="0.015691 0.00858911 -0.009375" quat="0.5 -0.5 -0.5 -0.5" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="mcu" />
-                <geom mass="0.00165" pos="0.015691 0.00858911 0.0202022" quat="0.5 -0.5 -0.5 -0.5" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="l_leg" />
-                <geom mass="0.0105" pos="0.015691 0.00858911 0.0202022" quat="0.5 -0.5 -0.5 -0.5" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="weight" />
-                <geom mass="0.00124" pos="0.0168778 0.00737613 0.036162" quat="0.852459 -0.320489 0.145352 -0.386617" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="hand_weight" />
+                <geom mass="0.00047" pos="0.0157485 0.00866577 0.0205022" quat="0.5 -0.5 -0.5 -0.5" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="r_arm" />
+                <geom mass="0.00402" pos="0.015691 0.00858911 -0.009375" quat="0.5 -0.5 -0.5 -0.5" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="mcu" />
+                <geom mass="0.0033" pos="0.015691 0.00858911 0.0202022" quat="0.5 -0.5 -0.5 -0.5" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="l_leg" />
+                <geom mass="0.022" pos="0.015691 0.00858911 0.0202022" quat="0.5 -0.5 -0.5 -0.5" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="weight" />
+                <geom mass="0.00248" pos="0.0168778 0.00737613 0.036162" quat="0.852459 -0.320489 0.145352 -0.386617" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="hand_weight" />
             </body>
         </body>
     </worldbody>
 
-    <contact>
-        <exclude body1="r_leg" body2="l_leg" />
-    </contact>
+    
 
     <actuator>
-        <motor name="hip_joint_act" joint="hip" forcerange="-0.01059232775 0.01059232775" />
+        
+
+        <motor name="hip_joint_act" joint="hip" />
     </actuator>
 </mujoco>
