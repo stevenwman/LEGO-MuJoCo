@@ -110,8 +110,9 @@ class Duplo(MjcSim):
 
     def run_sim(self, callbacks: dict[str, Callable]=None) -> None:
         """Run the simulation for the specified time."""
-        self.pend_len = self.pendulum_length()[0]
-        self.hip_omega = np.sqrt(9.81 / self.pend_len)
+        if self.hip_omega is None:
+            self.pend_len = self.pendulum_length()[0]
+            self.hip_omega = np.sqrt(9.81 / self.pend_len)
 
         print(f"hip freq: {self.hip_omega/(2*np.pi)}")
         loop = range(int(self.simtime // self.model.opt.timestep))

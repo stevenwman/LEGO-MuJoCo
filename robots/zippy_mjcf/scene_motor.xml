@@ -1,5 +1,5 @@
-<mujoco model="mugatu scene 3">
-  <include file="output.xml" />
+<mujoco model="zippy scene">
+  <include file="zippy_motor.xml" />
 
   <statistic center="0 0 0.2" extent="0.6" />
 

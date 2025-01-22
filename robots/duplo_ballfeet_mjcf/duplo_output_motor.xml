@@ -14,8 +14,7 @@
     </visual>
 
     <worldbody>
-        <body name="leg_1" pos="0 0 1.2"
-        quat="9.96563288e-01 -8.25810815e-02  4.39900536e-05  5.54941396e-05">
+        <body name="leg_1" pos="0 0 1.2" quat="9.96563288e-01 -8.25810815e-02  4.39900536e-05  5.54941396e-05">
             <freejoint />
             <geom mass="0.73" pos="0.84 -0.0625 -0.5725" quat="0 0 0 -1" type="mesh" mesh="battery" />
             <geom mass="0.63" pos="0.13658 -0.0789026 -0.375" quat="0 0 1 0" type="mesh" mesh="part_1" />

@@ -7,13 +7,13 @@ from utils.recorder import Recorder
 from typing import Callable, Any
 from utils.xml_handler import MJCFHandler
 
-class Mugatu(MjcSim):
+class Zippy(MjcSim):
     def __init__(self, config: dict) -> None:
-        """Initialize the Mugatu simulation environment."""
-        scene_path = f"{config['robot_dir']}/mugatu_mjcf/scene_motor.xml"
+        """Initialize the Zippy simulation environment."""
+        scene_path = f"{config['robot_dir']}/zippy_mjcf/scene_motor.xml"
         self.camera_params = {
-            'tracking': "right_leg",
-            'distance': 0.5,
+            'tracking': "r_leg",
+            'distance': 0.15,
             'xyaxis': [1, 0, 0, 0, 0, 1],
         }
 
@@ -23,7 +23,8 @@ class Mugatu(MjcSim):
         scene_path = self.mjcf_handler.new_scene_path
 
         super().__init__(scene_path, config)
-        
+
+        self.model.opt.timestep = 0.001
         self.get_hip_idx()
         self.init_ctrl_params(config["ctrl_dict"])
         self.step_sim() # Take the first sim step to initialize the data
@@ -70,36 +71,13 @@ class Mugatu(MjcSim):
         self.reference = self.leg_amp_rad * wave_val
         if self.data.time < waittime: self.reference = 0
 
-    def apply_ctrl(self) -> None:
-        """Apply the calculated control signal to the hip joint."""
-        self.data.actuator("hip_joint_act").ctrl = self.action
-
-    def calculate_mujoco_position_ctrl(self) -> None:
+    def direct_ctrl(self) -> None:
         """Calculate the position control signal for the hip joint."""
         self.action = self.reference
 
-    def calculate_pd_ctrl(self, hist_window: int=10) -> None:
-        """Calculate the PID control signal for the hip joint."""
-        self.calculate_sine_reference()
-
-        if self.action is None: # Initialize the control signal
-            # start a queue 
-            self.p_hist = deque([self.data.qpos[self.hip_qpos_idx]], maxlen=hist_window)  # Fixed-size queue
-            self.p_ref_hist = deque([self.reference], maxlen=hist_window)  # Fixed-size queue
-            self.action = 0
-            return
-            
-        # update the queue
-        self.p_hist.append(self.data.qpos[self.hip_qpos_idx])
-        self.p_ref_hist.append(self.reference)
-        p_err_hist = np.array(self.p_ref_hist) - np.array(self.p_hist)
-
-        # average the derivative over the entire queue
-        p_err = p_err_hist[-1] # most recent entry is at the end
-        p_err_d = np.mean(np.diff(p_err_hist) / self.model.opt.timestep)
-
-        # calculate the control signal
-        self.action = self.Kp * p_err + self.Kd * p_err_d
+    def apply_ctrl(self) -> None:
+        """Apply the calculated control signal to the hip joint."""
+        self.data.actuator("hip_joint_act").ctrl = self.action
 
     def data_log(self) -> None:
         """Log the data from the simulation."""
@@ -120,19 +98,17 @@ class Mugatu(MjcSim):
 
         for _ in loop:
             self.calculate_sine_reference()
-            self.calculate_pd_ctrl()    
+            self.direct_ctrl()
             self.apply_ctrl()
             self.step_sim()
             self.data_log()
-
-            print(self.data.qpos)
 
             if callbacks:
                 for name, func in callbacks.items():
                     func(self)  # Call function dynamically
         
 def main():
-    args = arg_parser("Mugatu Sim Args")
+    args = arg_parser("Zippy Sim Args")
 
     # Define the variables and their properties
     plot_attributes = {
@@ -153,12 +129,13 @@ def main():
 
     # dictionary of control parameters
     args['ctrl_dict'] = {
-        'Kp': 15,
-        'Kd': 0.5,
-        'leg_amp_deg': 0,
+        # 'Kp': 0.1,
+        # 'Kd': 0.00007,
+        'leg_amp_deg': np.rad2deg(0.01059232775) / 5,
+        'hip_omega': 52,
     }
 
-    robot = Mugatu(args)
+    robot = Zippy(args)
     progress_cb = ProgressCallback(args['sim_time'])  # Initialize progress tracker
     callbacks_dict = {
         "progress_bar" : progress_cb.update
