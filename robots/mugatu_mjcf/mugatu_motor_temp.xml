@@ -2,14 +2,13 @@
     <compiler angle="radian" eulerseq="zyx" autolimits="true" />
 
     <asset>
-        <mesh name="left_arm" file="left_arm.stl" />
-        <mesh name="right_foot" file="right_foot.stl" />
-        <mesh name="right_leg" file="right_leg.stl" />
-        <mesh name="right_battery" file="right_battery.stl" />
-        <mesh name="right_arm" file="right_arm.stl" />
-        <mesh name="left_foot" file="left_foot.stl" />
-        <mesh name="left_leg" file="left_leg.stl" />
-        
+        <mesh name="left_arm" file="left_arm.stl" inertia="exact" />
+        <mesh name="right_foot" file="right_foot.stl" inertia="exact" />
+        <mesh name="right_leg" file="right_leg.stl" inertia="exact" />
+        <mesh name="right_battery" file="right_battery.stl" inertia="exact" />
+        <mesh name="right_arm" file="right_arm.stl" inertia="exact" />
+        <mesh name="left_foot" file="left_foot.stl" inertia="exact" />
+        <mesh name="left_leg" file="left_leg.stl" inertia="exact" />
     </asset>
 
     <visual>

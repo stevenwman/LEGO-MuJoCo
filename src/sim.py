@@ -4,6 +4,7 @@ import numpy as np
 import sys
 import time
 from tqdm import tqdm
+from utils.xml_handler import MJCFHandler
 
 class MjcSim:
     def __init__(self, model_path: str, config: dict) -> None:
@@ -12,15 +13,21 @@ class MjcSim:
         self.gui = config['gui']
         self.v_fps = config['video_fps']
         self.config = config
-        
-        self.model = mujoco.MjModel.from_xml_path(model_path)
-        self.data = mujoco.MjData(self.model)
 
+        new_scene_path = self.update_xml(model_path)
+        self.model = mujoco.MjModel.from_xml_path(new_scene_path)
+        self.data = mujoco.MjData(self.model)
         total_mass = np.sum(self.model.body_mass)
         print(f"Total mass: {total_mass} kg")
 
         if self.config['record'] or self.config['gui']: self.setup_gui()
         self.ctrl_joint_names = None # names of the joints to control
+
+    def update_xml(self, scene_path: str) -> str:
+        self.mjcf_handler = MJCFHandler(scene_path)
+        self.mjcf_handler.update_mass()
+        new_scene_path = self.mjcf_handler.export_xml_scene()
+        return new_scene_path
 
     def setup_ctrl_joints(self) -> int:
         """Convert actuator joint names to joint ids and dof addresses."""
@@ -29,9 +36,8 @@ class MjcSim:
     
     @property
     def ctrl_joint_ids(self) -> list[int]:
-        ctrl_joint_ids = [mujoco.mj_name2id(self.model, 
-                                            mujoco.mjtObj.mjOBJ_JOINT, 
-                                            j_name) for j_name in self.ctrl_joint_names]
+        ctrl_joint_ids = [mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_JOINT, j_name) 
+                          for j_name in self.ctrl_joint_names]
         return ctrl_joint_ids
 
     def setup_gui(self):
@@ -84,9 +90,6 @@ class MjcSim:
             self.viewer.sync()
             time.sleep(self.model.opt.timestep)
             if not self.viewer.is_running(): sys.exit()
-
-    def actaution_override(self):
-        raise NotImplementedError("Override this method in the child class.")
 
     def close(self):
         """Close the simulation environment."""

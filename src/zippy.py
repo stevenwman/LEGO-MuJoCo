@@ -6,7 +6,6 @@ import time
 from typing import Callable, Any
 from utils.recorder import Recorder
 from utils.sim_args import arg_parser
-from utils.xml_handler import MJCFHandler
 
 class Zippy(MjcSim):
     def __init__(self, config: dict) -> None:
@@ -18,20 +17,7 @@ class Zippy(MjcSim):
             'xyaxis': [1, 0, 0, 0, 0, 1],
         }
 
-        self.mjcf_handler = MJCFHandler(scene_path)
-        self.mjcf_handler.update_mass()
-        self.mjcf_handler.export_xml_scene()
-        scene_path = self.mjcf_handler.new_scene_path
-
         super().__init__(scene_path, config)
-
-        # E = 1.2e9
-        # R = 0.025
-        # v = 0.25
-
-        # k = ((6 * (E**2) * (R**.5))/(3 * ((1-v**2)**2) ))**(1/3)
-
-        # print(f"K: {k}")
 
         self.model.opt.enableflags |= 1 << 0  # enable override
         self.model.opt.timestep = 0.0005
@@ -194,13 +180,68 @@ def main():
             
         robot.close()
         
+def main2():
+    args = arg_parser("Zippy Sim Args")
+
+    # Define the variables and their properties
+    plot_attributes = {
+        "actuator_actual_pos"   : {"title": "Joint Angle", "unit": "Rad"},
+        "actuator_torque"       : {"title": "Joint Torque", "unit": "Nm"},
+        "reference"             : {"title": "Joint Setpoint", "unit": "Rad"},
+        "actuator_speed"        : {"title": "Joint Speed", "unit": "Rad/s"},
+        "time"                  : {"title": "Time", "unit": "s"},  
+    }
+
+    # Define the structure of the plots
+    plot_structure = [
+        ["time", "actuator_actual_pos"],  # Subplot 1: X = time, Y = angle & setpoint
+        ["time", "reference"],  # Subplot 1: X = time, Y = angle & setpoint
+        ["time", "actuator_torque"],  # Subplot 2: X = time, Y = torque
+        # ["actuator_actual_pos", "actuator_torque"],  # Subplot 3: X = angle, Y = torque
+        # ["actuator_speed", "actuator_torque"],
+    ]
+
+    # dictionary of control parameters
+    args['ctrl_dict'] = {
+        # 'Kp': 0.1,
+        # 'Kd': 0.00007,
+        'leg_amp_deg': - np.rad2deg(0.01059232775) / 2,
+        # 'leg_amp_deg': 0,
+        # 'hip_omega': 3 * 2 * np.pi,
+        'hip_omega': 4.5 * 2 * np.pi,
+    }
+
+    robot = Zippy(args)
+    progress_cb = ProgressCallback(args['sim_time'])  # Initialize progress tracker
+    callbacks_dict = {
+        # "progress_bar" : progress_cb.update
+        }
+
+    if args["record"]:
+        recorder = Recorder(args['video_fps'], plot_attributes, plot_structure)
+        callbacks_dict["record_frame"] = recorder.record_frame
+        # callbacks_dict["record_plot_data"] = recorder.record_plot_data
+
+    robot.run_sim(callbacks=callbacks_dict)
+
+    if args["record"]:
+        v_dir = f"{args['video_dir']}/{robot.__class__.__name__}/{args['name']}"
+        os.makedirs(v_dir, exist_ok=True)
+        # recorder.generate_plot_video(output_path=f"{v_dir}/live_plot.mp4")
+        recorder.generate_robot_video(output_path=f"{v_dir}/robot_walking_{i}hz.mp4")
+        # recorder.stack_video_frames(recorder.plot_frames, 
+        #                             recorder.robot_frames,
+        #                             output_path=f"{v_dir}/combined.mp4")
+        
+    robot.close()
+
 if __name__ == "__main__":
     # from pyinstrument import Profiler
 
     # profiler = Profiler()
     # profiler.start()
 
-    main()
+    main2()
 
     # profiler.stop()
     # print(profiler.output_text(unicode=True, color=True))

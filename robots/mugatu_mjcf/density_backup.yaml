@@ -1,28 +1,35 @@
 left_arm:
+  density: 1283.2917768749157
   mass: 0.06219204786445871
   scale: 1
   volume: 4.846290530740357e-05
 left_foot:
+  density: 3283.354927579385
   mass: 0.13
   scale: 1
   volume: 3.9593648224878626e-05
 left_leg:
+  density: 1280.5521437261182
   mass: 0.07376726465798017
   scale: 1
   volume: 5.760582653302509e-05
 right_arm:
+  density: 1284.0822838892182
   mass: 0.059112686530484994
   scale: 1
   volume: 4.6034967752568755e-05
 right_battery:
+  density: 5497.054986486225
   mass: 0.15
   scale: 1
   volume: 2.728733846919031e-05
 right_foot:
+  density: 3283.381582460864
   mass: 0.13
   scale: 1
   volume: 3.95933267989419e-05
 right_leg:
+  density: 1281.0213915205131
   mass: 0.0529787507353837
   scale: 1
   volume: 4.135664797330229e-05

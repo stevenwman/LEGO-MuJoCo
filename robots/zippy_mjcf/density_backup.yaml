@@ -1,40 +1,50 @@
 battery:
+  density: 15057.572128234293
   mass: 0.02295
   scale: 1
   volume: 1.5241500956828691e-06
 driver:
+  density: 10348.958112374541
   mass: 0.0006
   scale: 1
   volume: 5.7976850759745853e-08
 hand_weight:
+  density: 6362.705754706608
   mass: 0.00248
   scale: 1
   volume: 3.897712853003613e-07
 hip_motor:
+  density: 3038.2120839210575
   mass: 0.00141
   scale: 1
   volume: 4.6408873411505935e-07
 l_arm:
+  density: 1261.1569337062276
   mass: 0.00058
   scale: 1
   volume: 4.5989518393680296e-07
 l_leg:
+  density: 1319.574197283519
   mass: 0.0033
   scale: 1
   volume: 2.50080670476385e-06
 mcu:
+  density: 8772.058165764849
   mass: 0.00402
   scale: 1
   volume: 4.582732950505339e-07
 r_arm:
+  density: 1317.543631498596
   mass: 0.00047
   scale: 1
   volume: 3.56724429281643e-07
 r_leg:
+  density: 1204.4258399596736
   mass: 0.00317
   scale: 1
   volume: 2.631959473823758e-06
 weight:
+  density: 80769.23271343837
   mass: 0.021
   scale: 1
   volume: 2.599999937415033e-07

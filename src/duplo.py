@@ -5,7 +5,6 @@ from src.sim import MjcSim, ProgressCallback
 from utils.sim_args import arg_parser
 from utils.recorder import Recorder
 from typing import Callable, Any
-from utils.xml_handler import MJCFHandler
 
 class Duplo(MjcSim):
     def __init__(self, config: dict) -> None:
@@ -17,13 +16,7 @@ class Duplo(MjcSim):
             'xyaxis': [-1, 0, 0, 0, 0, 1],
         }
 
-        self.mjcf_handler = MJCFHandler(scene_path)
-        self.mjcf_handler.update_mass()
-        self.mjcf_handler.export_xml_scene()
-        scene_path = self.mjcf_handler.new_scene_path
-
         super().__init__(scene_path, config)
-        
         self.get_hip_idx()
         self.init_ctrl_params(config["ctrl_dict"])
         self.step_sim() # Take the first sim step to initialize the data

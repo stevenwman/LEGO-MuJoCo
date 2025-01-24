@@ -2,11 +2,11 @@
     <compiler angle="radian" eulerseq="zyx" autolimits="true" />
 
     <asset>
-        <mesh name="battery" file="battery.stl" />
-        <mesh name="part_1" file="part_1.stl" scale="1.1 1 1" />
-        <mesh name="leg" file="leg.stl" />
-        <mesh name="arm" file="arm.stl" />
-        <mesh name="hip" file="hip.stl" />
+        <mesh name="battery" file="battery.stl" inertia="exact" />
+        <mesh name="part_1" file="part_1.stl" scale="1.1 1 1" inertia="exact" />
+        <mesh name="leg" file="leg.stl" inertia="exact" />
+        <mesh name="arm" file="arm.stl" inertia="exact" />
+        <mesh name="hip" file="hip.stl" inertia="exact" />
     </asset>
 
     <visual>
