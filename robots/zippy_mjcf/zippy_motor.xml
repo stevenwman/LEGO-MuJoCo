@@ -2,16 +2,16 @@
     <compiler angle="radian"/>
 
     <asset>
-        <mesh name="driver" file="driver.stl"/>
-        <mesh name="hip_motor" file="hip_motor.stl"/>
-        <mesh name="hand_weight" file="hand_weight.stl"/>
-        <mesh name="l_arm" file="l_arm.stl"/>
-        <mesh name="battery" file="battery.stl"/>
-        <mesh name="r_leg" file="r_leg.stl"/>
-        <mesh name="r_arm" file="r_arm.stl"/>
-        <mesh name="mcu" file="mcu.stl"/>
-        <mesh name="l_leg" file="l_leg.stl"/>
-        <mesh name="weight" file="weight.stl"/>
+        <mesh name="driver" file="driver.stl" inertia="exact"/>
+        <mesh name="hip_motor" file="hip_motor.stl" inertia="exact"/>
+        <mesh name="hand_weight" file="hand_weight.stl" inertia="exact"/>
+        <mesh name="l_arm" file="l_arm.stl" inertia="exact"/>
+        <mesh name="battery" file="battery.stl" inertia="exact"/>
+        <mesh name="r_leg" file="r_leg2.stl" inertia="exact"/>
+        <mesh name="r_arm" file="r_arm.stl" inertia="exact"/>
+        <mesh name="mcu" file="mcu.stl" inertia="exact"/>
+        <mesh name="l_leg" file="l_leg2.stl" inertia="exact"/>
+        <mesh name="weight" file="weight.stl" inertia="exact"/>
     </asset>
 
     <visual>
@@ -19,7 +19,7 @@
     </visual>
 
     <worldbody>
-        <body name="r_leg" pos="0 0 0.02496501">
+        <body name="r_leg" pos="0 0 1.02496501">
             <freejoint />
             <geom mass="0.0006" pos="0.0253843 0.0156727 0.00858911" quat="1 0 0 0" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="driver"/>
             <geom mass="0.00141" pos="0.0254272 0.015691 0.00858911" quat="1 0 0 0" type="mesh" rgba="0.796078 0.823529 0.937255 1" mesh="hip_motor"/>

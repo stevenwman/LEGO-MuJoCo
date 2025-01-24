@@ -155,7 +155,7 @@ def main():
     args['ctrl_dict'] = {
         'Kp': 15,
         'Kd': 0.5,
-        'leg_amp_deg': 0,
+        'leg_amp_deg': 35,
     }
 
     robot = Mugatu(args)

@@ -1,30 +1,30 @@
 battery:
   mass: 0.02
-  scale: 1
+  scale: 0.413
 driver:
   mass: 0.0006
-  scale: 1
+  scale: 0.413
 hand_weight:
   mass: 0.00248
-  scale: 1
+  scale: 0.413
 hip_motor:
   mass: 0.00141
-  scale: 1
+  scale: 0.413
 l_arm:
   mass: 0.00058
-  scale: 1
+  scale: 0.413
 l_leg:
   mass: 0.0033
-  scale: 1
+  scale: 0.413
 mcu:
   mass: 0.00402
-  scale: 1
+  scale: 0.413
 r_arm:
   mass: 0.00047
-  scale: 1
+  scale: 0.413
 r_leg:
   mass: 0.00317
-  scale: 1
+  scale: 0.413
 weight:
   mass: 0.022
-  scale: 1
+  scale: 0.413

@@ -43,6 +43,7 @@ class Duplo(MjcSim):
         self.Kp = 0
         self.Kd = 0
         self.leg_amp_deg = 0
+        self.hip_omega = None
         # self.pend_len = 0.63 # default from a while back
         for k,v in ctrl_dict.items(): 
             setattr(self, k, v)

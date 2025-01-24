@@ -25,13 +25,22 @@ class Zippy(MjcSim):
 
         super().__init__(scene_path, config)
 
+        # E = 1.2e9
+        # R = 0.025
+        # v = 0.25
+
+        # k = ((6 * (E**2) * (R**.5))/(3 * ((1-v**2)**2) ))**(1/3)
+
+        # print(f"K: {k}")
+
         self.model.opt.enableflags |= 1 << 0  # enable override
         self.model.opt.timestep = 0.0005
-        self.model.opt.o_solref[0] = -20000
-        self.model.opt.o_solref[1] = -200
-        # self.model.opt.o_solimp[0] = 0.98 
-        # self.model.opt.o_solimp[1] = 0.99 
-        # self.model.opt.o_solimp[2] = 0.0005
+        self.model.opt.iterations = 200
+        # self.model.opt.o_solref[0] = .01
+        # self.model.opt.o_solref[1] = 10
+        self.model.opt.o_solimp[0] = 0.9 
+        self.model.opt.o_solimp[1] = 0.95 
+        self.model.opt.o_solimp[2] = 0.001
 
         self.get_hip_idx()
         self.init_ctrl_params(config["ctrl_dict"])
@@ -105,13 +114,13 @@ class Zippy(MjcSim):
         loop = range(int(self.simtime // self.model.opt.timestep))
 
         for i in loop:
-            self.calculate_sine_reference(b=10)
+            self.calculate_sine_reference(b=5)
             self.direct_ctrl()
             self.apply_ctrl()
             self.step_sim()
             self.data_log()
 
-            # time.sleep(self.model.opt.timestep * 1)
+            # time.sleep(self.model.opt.timestep * 4)
 
             if i % 2 == 0:  # Update the progress bar every 2 steps
                 print(f"Time: {self.data.time:.5f} / {self.simtime} s", end="\r")
@@ -121,6 +130,11 @@ class Zippy(MjcSim):
             if callbacks:
                 for name, func in callbacks.items():
                     func(self)  # Call function dynamically
+
+            # if not self.viewer.is_running():
+            #     return
+
+            
         
 def main():
     args = arg_parser("Zippy Sim Args")
@@ -143,37 +157,42 @@ def main():
         # ["actuator_speed", "actuator_torque"],
     ]
 
-    # dictionary of control parameters
-    args['ctrl_dict'] = {
-        # 'Kp': 0.1,
-        # 'Kd': 0.00007,
-        'leg_amp_deg': - np.rad2deg(0.01059232775) / 3,
-        'hip_omega': 8.5 * 2 * np.pi,
-    }
+    for i in np.arange(1,15,0.25):
+        print(f"Running simulation for hip freq: {i} Hz")
 
-    robot = Zippy(args)
-    progress_cb = ProgressCallback(args['sim_time'])  # Initialize progress tracker
-    callbacks_dict = {
-        # "progress_bar" : progress_cb.update
+        # dictionary of control parameters
+        args['ctrl_dict'] = {
+            # 'Kp': 0.1,
+            # 'Kd': 0.00007,
+            'leg_amp_deg': - np.rad2deg(0.01059232775) / 2,
+            # 'leg_amp_deg': 0,
+            # 'hip_omega': 3 * 2 * np.pi,
+            'hip_omega': i * 2 * np.pi,
         }
 
-    if args["record"]:
-        recorder = Recorder(args['video_fps'], plot_attributes, plot_structure)
-        callbacks_dict["record_frame"] = recorder.record_frame
-        callbacks_dict["record_plot_data"] = recorder.record_plot_data
+        robot = Zippy(args)
+        progress_cb = ProgressCallback(args['sim_time'])  # Initialize progress tracker
+        callbacks_dict = {
+            # "progress_bar" : progress_cb.update
+            }
 
-    robot.run_sim(callbacks=callbacks_dict)
+        if args["record"]:
+            recorder = Recorder(args['video_fps'], plot_attributes, plot_structure)
+            callbacks_dict["record_frame"] = recorder.record_frame
+            # callbacks_dict["record_plot_data"] = recorder.record_plot_data
 
-    if args["record"]:
-        v_dir = f"{args['video_dir']}/{robot.__class__.__name__}/{args['name']}"
-        os.makedirs(v_dir, exist_ok=True)
-        recorder.generate_plot_video(output_path=f"{v_dir}/live_plot.mp4")
-        recorder.generate_robot_video(output_path=f"{v_dir}/robot_walking.mp4")
-        recorder.stack_video_frames(recorder.plot_frames, 
-                                    recorder.robot_frames,
-                                    output_path=f"{v_dir}/combined.mp4")
-        
-    robot.close()
+        robot.run_sim(callbacks=callbacks_dict)
+
+        if args["record"]:
+            v_dir = f"{args['video_dir']}/{robot.__class__.__name__}/{args['name']}"
+            os.makedirs(v_dir, exist_ok=True)
+            # recorder.generate_plot_video(output_path=f"{v_dir}/live_plot.mp4")
+            recorder.generate_robot_video(output_path=f"{v_dir}/robot_walking_{i}hz.mp4")
+            # recorder.stack_video_frames(recorder.plot_frames, 
+            #                             recorder.robot_frames,
+            #                             output_path=f"{v_dir}/combined.mp4")
+            
+        robot.close()
         
 if __name__ == "__main__":
     # from pyinstrument import Profiler

@@ -9,6 +9,7 @@
         <mesh name="right_arm" file="right_arm.stl" />
         <mesh name="left_foot" file="left_foot.stl" />
         <mesh name="left_leg" file="left_leg.stl" />
+        
     </asset>
 
     <visual>
