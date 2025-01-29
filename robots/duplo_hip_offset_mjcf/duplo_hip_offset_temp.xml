@@ -16,7 +16,7 @@
     </visual>
 
     <worldbody>
-        <body name="motor" pos="0 0 1.3" quat="-0.000860502024 -6.59361173e-07 0.0495928642 0.998769146">
+        <body name="motor" pos="0 0 1.3" quat="0.991426305 0.130665412 -2.50777265e-05 0.000656038625">
             <freejoint />
             <geom mass="0.2" pos="-0.555 0 0" quat="0.707107 -0.707107 0 0" type="mesh" mesh="hip" />
             <geom mass="0.6" quat="0.707107 -0.707107 0 0" type="mesh" rgba="0.615686 0.811765 0.929412 1" mesh="ak80-8" />
@@ -25,7 +25,7 @@
                 <geom mass="0.73" pos="-0.05 -0.56 0.855" quat="0.5 -0.5 0.5 0.5" type="mesh" mesh="battery" />
                 <geom mass="0.05" pos="0.054 -0.9875 -0.0125" quat="0.5 -0.5 -0.5 -0.5" type="mesh" mesh="leg_h" />
                 <geom mass="0.2" pos="-0.0125 -0.485 0.82" quat="0.5 -0.5 0.5 0.5" type="mesh" mesh="arm" />
-                <body name="leg_v" pos="0.034 0.0 0.0" quat="0.707107 0 -0.707107 0">
+                <body name="leg_v" pos="0.054 0.0 0.0" quat="0.707107 0 -0.707107 0">
                     <geom mass="0.2" pos="-0.0125 -0.9875 0" quat="0.707107 -0.707107 0 0" type="mesh" mesh="leg_v" />
                     <geom mass="0.63" pos="0.14908 -0.3625 -0.0125974" quat="0 0 -0.707107 0.707107" type="mesh" mesh="part_1" />
                 </body>
@@ -35,7 +35,7 @@
                 <geom mass="0.2" pos="0.0125 -0.485 -0.82" quat="0.5 -0.5 -0.5 -0.5" type="mesh" mesh="arm" />
                 <geom mass="0.05" pos="0.054 -0.9875 -0.0125" quat="0.5 -0.5 -0.5 -0.5" type="mesh" mesh="leg_h" />
                 <geom mass="0.73" pos="-0.05 -0.56 -0.755" quat="0.5 -0.5 0.5 0.5" type="mesh" mesh="battery" />
-                <body name="leg_v_2" pos="0.034 0.0 0.0" quat="0.707107 0 -0.707107 0">
+                <body name="leg_v_2" pos="0.054 0.0 0.0" quat="0.707107 0 -0.707107 0">
                     <geom mass="0.2" pos="-0.0125 -0.9875 0" quat="0.707107 -0.707107 0 0" type="mesh" mesh="leg_v" />
                     <geom mass="0.63" pos="-0.14908 -0.3625 -0.0124026" quat="0.707107 0.707107 0 0" type="mesh" mesh="part_1" />
                 </body>

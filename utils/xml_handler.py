@@ -70,7 +70,6 @@ class MJCFHandler:
                     body.set("pos", pos)
 
         if "body_quat" in design_params.keys():
-            print("hi")
             body_quat: dict = design_params["body_quat"]
             for body in self.bodies:
                 name = body.get("name")
@@ -78,6 +77,15 @@ class MJCFHandler:
                     quat = body_quat[name]
                     quat = f"{quat[0]} {quat[1]} {quat[2]} {quat[3]}"
                     body.set("quat", quat)
+
+        if "mesh_scale" in design_params.keys():
+            mesh_scale: dict = design_params["mesh_scale"]
+            for mesh in self.meshes:
+                name = mesh.get("name")
+                if name in mesh_scale.keys():
+                    scale = mesh_scale[name]
+                    scale = f"{scale[0]} {scale[1]} {scale[2]}"
+                    mesh.set("scale", scale)
         
     def update_volume(self) -> None:
         """Update the volume of the geoms in the model."""

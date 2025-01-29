@@ -124,7 +124,7 @@ class Duplo(MjcSim):
             self.data_log()
 
             quats.append(self.data.qpos[3:7])
-            print(f"quats: {quats[-1]}")
+            # print(f"quats: {quats[-1]}")
 
             if callbacks:
                 for name, func in callbacks.items():
@@ -132,6 +132,7 @@ class Duplo(MjcSim):
 
         mean_quat = np.mean(quats, axis=0)
         print(f"mean quat: {mean_quat}")
+        print(f"last quat: {quats[-1]}")
         
 def main():
     args = arg_parser("Duplo Sim Args")
@@ -158,18 +159,17 @@ def main():
         'Kp': 15,
         'Kd': 12,
         'leg_amp_deg': 35,
-        'leg_amp_deg': 0,
-        # 'hip_omega': 0.7 * 2 * np.pi,
+        # 'leg_amp_deg': 0,
+        # 'hip_omega': 0.6 * 2 * np.pi,
     }
 
     args['design_params'] = {
-        'body_pos_offset': {
-            'leg_v' : [-0.02, 0, 0],
-            'leg_v_2' : [-0.02, 0, 0],
-        },
-        'body_quat' : {
-            'motor' : [-8.60502024e-04, -6.59361173e-07, 4.95928642e-02, 9.98769146e-01],
-        }
+        'body_pos_offset': {'leg_v' : [-0.0, 0, 0], 
+                            'leg_v_2' : [-0.0, 0, 0]},
+        # 'body_quat' : {'motor' : [1, 0, 0, 0]},
+        'body_quat' : {'motor' : [9.91426305e-01,  1.30665412e-01, -2.50777265e-05,  6.56038625e-04]},
+        # 'body_quat' : {'motor' : [-8.60502024e-04, -6.59361173e-07, 4.95928642e-02, 9.98769146e-01]},
+        'mesh_scale' : {'part_1' : [1.3, 1, 1]}
     }
 
     robot = Duplo(args)
