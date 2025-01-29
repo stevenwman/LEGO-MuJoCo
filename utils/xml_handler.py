@@ -1,5 +1,6 @@
 import os
 import trimesh
+from typing import Any
 import xml.etree.ElementTree as ET
 import yaml
 
@@ -39,6 +40,7 @@ class MJCFHandler:
         # find all meshes and geoms
         self.meshes = self.assets.findall('.//mesh')
         self.geoms = self.worldbody.findall('.//geom')
+        self.bodies = self.worldbody.findall('.//body')
         self.mass_dict: dict[str,dict[str,float]] = {}
         self.config_export_path = self.scene_dir + "/mass_config.yaml"
         # if a mass_config file exists, load it
@@ -52,6 +54,31 @@ class MJCFHandler:
         if not os.path.exists(self.scene_dir + "/density_backup.yaml"):
             backup_density(self.config_export_path)
 
+    def update_design_params(self, design_params: dict[str, Any]) -> None:
+        """Update the design parameters of the model."""
+        if design_params == {}: return
+        if "body_pos_offset" in design_params.keys():
+            body_pos_offset: dict = design_params["body_pos_offset"]
+            for body in self.bodies:
+                name = body.get("name")
+                if name in body_pos_offset.keys():
+                    offset = body_pos_offset[name]
+                    pos = body.get("pos")
+                    pos = (f"{float(pos.split()[0]) + offset[0]} "
+                           f"{float(pos.split()[1]) + offset[1]} "
+                           f"{float(pos.split()[2]) + offset[2]}")
+                    body.set("pos", pos)
+
+        if "body_quat" in design_params.keys():
+            print("hi")
+            body_quat: dict = design_params["body_quat"]
+            for body in self.bodies:
+                name = body.get("name")
+                if name in body_quat.keys():
+                    quat = body_quat[name]
+                    quat = f"{quat[0]} {quat[1]} {quat[2]} {quat[3]}"
+                    body.set("quat", quat)
+        
     def update_volume(self) -> None:
         """Update the volume of the geoms in the model."""
         for mesh in self.meshes:

@@ -1,9 +1,9 @@
 battery:
-  mass: 0.02295
+  mass: 0.00295
   scale: 1
   volume: 1.5241500956828691e-06
 driver:
-  mass: 0.0006
+  mass: 0.0013
   scale: 1
   volume: 5.7976850759745853e-08
 hand_weight:
@@ -15,7 +15,7 @@ hip_motor:
   scale: 1
   volume: 4.6408873411505935e-07
 l_arm:
-  mass: 0.00058
+  mass: 0.00031
   scale: 1
   volume: 4.5989518393680296e-07
 l_leg:
@@ -23,7 +23,7 @@ l_leg:
   scale: 1
   volume: 2.50080670476385e-06
 mcu:
-  mass: 0.00402
+  mass: 0.00359
   scale: 1
   volume: 4.582732950505339e-07
 r_arm:
@@ -35,6 +35,6 @@ r_leg:
   scale: 1
   volume: 2.631959473823758e-06
 weight:
-  mass: 0.021
+  mass: 0.00149
   scale: 1
   volume: 2.599999937415033e-07

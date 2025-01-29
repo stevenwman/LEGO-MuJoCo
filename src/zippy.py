@@ -17,16 +17,17 @@ class Zippy(MjcSim):
             'xyaxis': [1, 0, 0, 0, 0, 1],
         }
 
-        super().__init__(scene_path, config)
-
+        new_scene_path = self.update_xml(scene_path)
+        super().__init__(new_scene_path, config)
+        
         self.model.opt.enableflags |= 1 << 0  # enable override
-        self.model.opt.timestep = 0.0005
-        self.model.opt.iterations = 200
+        self.model.opt.timestep = 0.001
+        # self.model.opt.iterations = 200
         # self.model.opt.o_solref[0] = .01
         # self.model.opt.o_solref[1] = 10
-        self.model.opt.o_solimp[0] = 0.9 
-        self.model.opt.o_solimp[1] = 0.95 
-        self.model.opt.o_solimp[2] = 0.001
+        # self.model.opt.o_solimp[0] = 0.9 
+        # self.model.opt.o_solimp[1] = 0.95 
+        # self.model.opt.o_solimp[2] = 0.001
 
         self.get_hip_idx()
         self.init_ctrl_params(config["ctrl_dict"])
@@ -205,7 +206,7 @@ def main2():
     args['ctrl_dict'] = {
         # 'Kp': 0.1,
         # 'Kd': 0.00007,
-        'leg_amp_deg': - np.rad2deg(0.01059232775) / 2,
+        'leg_amp_deg': - np.rad2deg(0.01059232775) / 4,
         # 'leg_amp_deg': 0,
         # 'hip_omega': 3 * 2 * np.pi,
         'hip_omega': 4.5 * 2 * np.pi,

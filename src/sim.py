@@ -4,6 +4,7 @@ import numpy as np
 import sys
 import time
 from tqdm import tqdm
+from typing import Any
 from utils.xml_handler import MJCFHandler
 
 class MjcSim:
@@ -14,8 +15,9 @@ class MjcSim:
         self.v_fps = config['video_fps']
         self.config = config
 
-        new_scene_path = self.update_xml(model_path)
-        self.model = mujoco.MjModel.from_xml_path(new_scene_path)
+        # new_scene_path = self.update_xml(model_path)
+
+        self.model = mujoco.MjModel.from_xml_path(model_path)
         self.data = mujoco.MjData(self.model)
         total_mass = np.sum(self.model.body_mass)
         print(f"Total mass: {total_mass} kg")
@@ -23,9 +25,10 @@ class MjcSim:
         if self.config['record'] or self.config['gui']: self.setup_gui()
         self.ctrl_joint_names = None # names of the joints to control
 
-    def update_xml(self, scene_path: str) -> str:
+    def update_xml(self, scene_path: str, design_params: dict[str, Any]={}) -> str:
         self.mjcf_handler = MJCFHandler(scene_path)
         self.mjcf_handler.update_mass()
+        self.mjcf_handler.update_design_params(design_params)
         new_scene_path = self.mjcf_handler.export_xml_scene()
         return new_scene_path
 

@@ -9,14 +9,17 @@ from typing import Callable, Any
 class Duplo(MjcSim):
     def __init__(self, config: dict) -> None:
         """Initialize the Duplo simulation environment."""
-        scene_path = f"{config['robot_dir']}/duplo_ballfeet_mjcf/scene_motor.xml"
+        # scene_path = f"{config['robot_dir']}/duplo_ballfeet_mjcf/scene_motor.xml"
+        scene_path = f"{config['robot_dir']}/duplo_hip_offset_mjcf/scene_hip_offset.xml"
         self.camera_params = {
-            'tracking': "leg_1",
+            # 'tracking': "leg_1",
+            'tracking': "leg_h",
             'distance': 5,
             'xyaxis': [-1, 0, 0, 0, 0, 1],
         }
 
-        super().__init__(scene_path, config)
+        new_scene_path = self.update_xml(scene_path, config['design_params'])
+        super().__init__(new_scene_path, config)
         self.get_hip_idx()
         self.init_ctrl_params(config["ctrl_dict"])
         self.step_sim() # Take the first sim step to initialize the data
@@ -111,6 +114,8 @@ class Duplo(MjcSim):
         print(f"hip freq: {self.hip_omega/(2*np.pi)}")
         loop = range(int(self.simtime // self.model.opt.timestep))
 
+        quats = []
+
         for _ in loop:
             self.calculate_sine_reference()
             self.calculate_pd_ctrl()    
@@ -118,9 +123,15 @@ class Duplo(MjcSim):
             self.step_sim()
             self.data_log()
 
+            quats.append(self.data.qpos[3:7])
+            print(f"quats: {quats[-1]}")
+
             if callbacks:
                 for name, func in callbacks.items():
                     func(self)  # Call function dynamically
+
+        mean_quat = np.mean(quats, axis=0)
+        print(f"mean quat: {mean_quat}")
         
 def main():
     args = arg_parser("Duplo Sim Args")
@@ -147,6 +158,18 @@ def main():
         'Kp': 15,
         'Kd': 12,
         'leg_amp_deg': 35,
+        'leg_amp_deg': 0,
+        # 'hip_omega': 0.7 * 2 * np.pi,
+    }
+
+    args['design_params'] = {
+        'body_pos_offset': {
+            'leg_v' : [-0.02, 0, 0],
+            'leg_v_2' : [-0.02, 0, 0],
+        },
+        'body_quat' : {
+            'motor' : [-8.60502024e-04, -6.59361173e-07, 4.95928642e-02, 9.98769146e-01],
+        }
     }
 
     robot = Duplo(args)
