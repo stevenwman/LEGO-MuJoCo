@@ -5,6 +5,7 @@ from src.sim import MjcSim, ProgressCallback
 from utils.sim_args import arg_parser
 from utils.recorder import Recorder
 from typing import Callable, Any
+from copy import deepcopy
 
 class Duplo(MjcSim):
     def __init__(self, config: dict) -> None:
@@ -15,7 +16,7 @@ class Duplo(MjcSim):
             # 'tracking': "leg_1",
             'tracking': "leg_h",
             'distance': 5,
-            'xyaxis': [-1, 0, 0, 0, 0, 1],
+            'xyaxis': [1, 0, 0, 0, 0, 1],
         }
 
         new_scene_path = self.update_xml(scene_path, config['design_params'])
@@ -66,6 +67,18 @@ class Duplo(MjcSim):
         self.reference = self.leg_amp_rad * wave_val
         if self.data.time < waittime: self.reference = 0
 
+    def calculate_cosine_reference(self, 
+                                   wait_time: float=1.0, 
+                                   init_time: float=1.0,
+                                   b:float=1.0) -> None:
+        """Calculate the cosine wave control signal for the hip joint."""
+        # b defines how sharp a cosine wave is, higher the sharper
+        wave = np.cos(self.hip_omega * (self.data.time-wait_time))
+        wave_val = np.sqrt((1 + b**2) / (1 + (b**2) * wave**2))*wave
+        self.reference = self.leg_amp_rad * wave_val
+        if self.data.time < init_time + wait_time: self.reference = self.leg_amp_rad
+        if self.data.time < wait_time: self.reference = 0
+        
     def apply_ctrl(self) -> None:
         """Apply the calculated control signal to the hip joint."""
         self.data.actuator("hip_joint_act").ctrl = self.action
@@ -123,7 +136,7 @@ class Duplo(MjcSim):
             self.step_sim()
             self.data_log()
 
-            quats.append(self.data.qpos[3:7])
+            quats.append(self.data.qpos[3:7].copy())
             # print(f"quats: {quats[-1]}")
 
             if callbacks:
@@ -131,6 +144,7 @@ class Duplo(MjcSim):
                     func(self)  # Call function dynamically
 
         mean_quat = np.mean(quats, axis=0)
+        # print(quats)
         print(f"mean quat: {mean_quat}")
         print(f"last quat: {quats[-1]}")
         
@@ -167,7 +181,7 @@ def main():
         'body_pos_offset': {'leg_v' : [-0.0, 0, 0], 
                             'leg_v_2' : [-0.0, 0, 0]},
         # 'body_quat' : {'motor' : [1, 0, 0, 0]},
-        'body_quat' : {'motor' : [9.91426305e-01,  1.30665412e-01, -2.50777265e-05,  6.56038625e-04]},
+        'body_quat' : {'motor' : [9.91243386e-01, 1.22932829e-01, -3.19655647e-05, 2.30992995e-03]},
         # 'body_quat' : {'motor' : [-8.60502024e-04, -6.59361173e-07, 4.95928642e-02, 9.98769146e-01]},
         'mesh_scale' : {'part_1' : [1.3, 1, 1]}
     }

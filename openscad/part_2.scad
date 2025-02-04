@@ -1,4 +1,4 @@
-w = 0.3;
+w = 0.25;
 h = 0.6;
 
 intersection() {
