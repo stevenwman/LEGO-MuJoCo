@@ -22,12 +22,14 @@ class Zippy(MjcSim):
         
         self.model.opt.enableflags |= 1 << 0  # enable override
         self.model.opt.timestep = 0.001
+
+        # solreflimit="4e-3 1" solimplimit=".95 .99 1e-3"
         # self.model.opt.iterations = 200
-        # self.model.opt.o_solref[0] = .01
-        # self.model.opt.o_solref[1] = 10
-        # self.model.opt.o_solimp[0] = 0.9 
-        # self.model.opt.o_solimp[1] = 0.95 
-        # self.model.opt.o_solimp[2] = 0.001
+        self.model.opt.o_solref[0] = 4e-3
+        self.model.opt.o_solref[1] = 1
+        self.model.opt.o_solimp[0] = 0.95 
+        self.model.opt.o_solimp[1] = 0.99 
+        self.model.opt.o_solimp[2] = 1e-3
 
         self.get_hip_idx()
         self.init_ctrl_params(config["ctrl_dict"])
@@ -49,10 +51,16 @@ class Zippy(MjcSim):
         self.Kd = 0
         self.leg_amp_deg = 0
         self.hip_omega = None
+        self.j_damping = 0
+        self.v_mean = 0
         # self.pend_len = 0.63 # default from a while back
         for k,v in ctrl_dict.items(): 
             setattr(self, k, v)
             print(f"{k} set to {getattr(self, k)}.")
+
+    def set_j_damping(self, damping: float) -> None:
+        """Set the damping of the joint."""
+        self.model.dof_damping[self.hip_dof_idx] = damping
 
     @property
     def leg_amp_rad(self) -> float:
@@ -72,12 +80,15 @@ class Zippy(MjcSim):
         # b defines how sharp a sine wave is, higher the sharper
         wave = np.sin(self.hip_omega * (self.data.time-waittime))
         wave_val = np.sqrt((1 + b**2) / (1 + (b**2) * wave**2))*wave
-        self.reference = self.leg_amp_rad * wave_val
+        # self.reference = self.leg_amp_rad * wave_val
+        self.reference = self.leg_amp_rad * (wave_val + self.v_mean)
         if self.data.time < waittime: self.reference = 0
 
     def direct_ctrl(self) -> None:
         """Calculate the position control signal for the hip joint."""
-        self.action = self.reference
+        # self.action = self.reference
+        trq_lim = np.rad2deg(0.01059232775)
+        self.action = np.clip(self.reference, a_min=-trq_lim, a_max=trq_lim)
 
     def apply_ctrl(self) -> None:
         """Apply the calculated control signal to the hip joint."""
@@ -96,6 +107,8 @@ class Zippy(MjcSim):
         if self.hip_omega is None:
             self.pend_len = self.pendulum_length()[0]
             self.hip_omega = np.sqrt(9.81 / self.pend_len)
+
+        self.set_j_damping(self.j_damping)
 
         print(f"hip freq: {self.hip_omega/(2*np.pi)}")
         loop = range(int(self.simtime // self.model.opt.timestep))
@@ -155,6 +168,8 @@ def main():
             # 'leg_amp_deg': 0,
             # 'hip_omega': 3 * 2 * np.pi,
             'hip_omega': i * 2 * np.pi,
+            'j_damping': 0.1,
+            'v_mean' : -0.1,
         }
 
         robot = Zippy(args)
@@ -202,14 +217,18 @@ def main2():
         # ["actuator_speed", "actuator_torque"],
     ]
 
+    plot_time_range = [0.75,7]
+
     # dictionary of control parameters
     args['ctrl_dict'] = {
         # 'Kp': 0.1,
         # 'Kd': 0.00007,
-        'leg_amp_deg': - np.rad2deg(0.01059232775) / 4,
+        'leg_amp_deg': np.rad2deg(0.01059232775)/2,
         # 'leg_amp_deg': 0,
-        # 'hip_omega': 3 * 2 * np.pi,
-        'hip_omega': 4.5 * 2 * np.pi,
+        # 'hip_omega': 0.1 * 2 * np.pi,
+        'hip_omega': 4.6 * 2 * np.pi,
+        'j_damping': 0.001,
+        # 'v_mean' : -0.01,
     }
 
     robot = Zippy(args)
@@ -219,20 +238,23 @@ def main2():
         }
 
     if args["record"]:
-        recorder = Recorder(args['video_fps'], plot_attributes, plot_structure)
+        recorder = Recorder(args['video_fps'], 
+                            plot_attributes, 
+                            plot_structure, 
+                            plot_time_range)
         callbacks_dict["record_frame"] = recorder.record_frame
-        # callbacks_dict["record_plot_data"] = recorder.record_plot_data
+        callbacks_dict["record_plot_data"] = recorder.record_plot_data
 
     robot.run_sim(callbacks=callbacks_dict)
 
     if args["record"]:
         v_dir = f"{args['video_dir']}/{robot.__class__.__name__}/{args['name']}"
         os.makedirs(v_dir, exist_ok=True)
-        # recorder.generate_plot_video(output_path=f"{v_dir}/live_plot.mp4")
-        recorder.generate_robot_video(output_path=f"{v_dir}/robot_walking_{i}hz.mp4")
-        # recorder.stack_video_frames(recorder.plot_frames, 
-        #                             recorder.robot_frames,
-        #                             output_path=f"{v_dir}/combined.mp4")
+        recorder.generate_plot_video(output_path=f"{v_dir}/live_plot.mp4")
+        recorder.generate_robot_video(output_path=f"{v_dir}/robot_walking.mp4")
+        recorder.stack_video_frames(recorder.plot_frames, 
+                                    recorder.robot_frames,
+                                    output_path=f"{v_dir}/combined.mp4")
         
     robot.close()
 

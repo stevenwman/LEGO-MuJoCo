@@ -15,7 +15,8 @@ class Recorder:
     def __init__(self, 
                  video_fps: float, 
                  plot_attributes: dict[str, dict[str, str]], 
-                 plot_structure: list[list[str]]) -> None:
+                 plot_structure: list[list[str]],
+                 plot_time_range: list[float, float]=None) -> None:
         """
         - plot_attributes: Dict mapping variable names to {title}.
         - plot_structure: List of subplots, each containing [x, y1, y2, ...].
@@ -28,6 +29,8 @@ class Recorder:
         self.robot_frames = []
         self.plt_attr = plot_attributes  # { "varName": {"title": "plotTitle", "color": (G,B,R), "line_style": "--"} }
         self.plt_struc = plot_structure  # [[xvar, yvar1, yvar2], [xvar2, yvar3], ...]
+        self.plot_time_range = plot_time_range
+        assert plot_time_range[1] > plot_time_range[0] or plot_time_range is None, "Invalid time range!"
         # Initialize empty lists for each variable in plot_attributes
         for var in self.plt_attr:
             self.plt_data[var] = []
@@ -122,11 +125,14 @@ class Recorder:
                 curves.append((curve, y))
             self.plots_and_curves.append((plot, curves, x))
 
+    
         for (plot, curves, x) in self.plots_and_curves:
             xmin, xmax = min(self.plt_data[x]), max(self.plt_data[x])
             ymin = min(min(self.plt_data[y]) for _, y in curves)
             ymax = max(max(self.plt_data[y]) for _, y in curves)
             plot.setRange(xRange=(xmin, xmax), yRange=(ymin, ymax))
+            if self.plot_time_range is not None:
+                plot.setRange(xRange=self.plot_time_range)
 
         self.win.resize(plot_w, sum(plot_hs))
         self.win.show()

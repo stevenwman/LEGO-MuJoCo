@@ -1,6 +1,6 @@
 battery:
   mass: 0.00295
-  scale: 1
+  scale: 1.07
   volume: 1.5241500956828691e-06
 driver:
   mass: 0.0013
@@ -36,5 +36,5 @@ r_leg:
   volume: 2.631959473823758e-06
 weight:
   mass: 0.00149
-  scale: 1
+  scale: 0
   volume: 2.599999937415033e-07

@@ -1,11 +1,13 @@
 from collections import deque
 import numpy as np
+import mujoco
 import os
+import pickle as pkl
 from src.sim import MjcSim, ProgressCallback
 from utils.sim_args import arg_parser
 from utils.recorder import Recorder
 from typing import Callable, Any
-from copy import deepcopy
+import yaml
 
 class Duplo(MjcSim):
     def __init__(self, config: dict) -> None:
@@ -118,6 +120,53 @@ class Duplo(MjcSim):
         self.applied_torque = self.data.qfrc_applied[self.hip_dof_idx]
         self.actuator_speed = self.data.qvel[self.hip_dof_idx]
 
+    def record_contact_points(self) -> None:
+        for k,v in self.contact_bodies.items():
+            body_id = v['body_id']
+            for i in range(self.data.ncon):
+                contact = self.data.contact[i]
+                geom1_body = self.model.geom_bodyid[contact.geom1]
+                geom2_body = self.model.geom_bodyid[contact.geom2]
+                if geom1_body == body_id or geom2_body == body_id:
+                    # Get world-frame contact position
+                    pos_world = contact.pos
+                    
+                    # Body's current pose
+                    body_pos = self.data.body(body_id).xpos
+                    body_quat = self.data.body(body_id).xquat
+
+                    mesh_pos = v['pos']
+                    mesh_quat = v['quat']
+                    mesh_offset = v['mesh_offset']
+                    
+                    # Convert quaternion to rotation matrix
+                    R_body = np.zeros(9)
+                    mujoco.mju_quat2Mat(R_body, body_quat)
+                    R_body = R_body.reshape(3, 3)
+
+                    R_mesh = np.zeros(9)
+                    mujoco.mju_quat2Mat(R_mesh, mesh_quat)
+                    R_mesh = R_mesh.reshape(3, 3)
+                    
+                    # Transform to body frame: p_body = R^T (p_world - body_pos)
+                    p_body = R_body.T @ (pos_world - body_pos)
+                    p_mesh = R_mesh.T @ (p_body - mesh_pos)
+
+                    timed_p_mesh = np.hstack([self.data.time, p_mesh])
+
+                    if k in self.con_dict.keys():
+                        # vstack
+                        self.con_dict[k]['t_coords'] = np.vstack([self.con_dict[k]['t_coords'], 
+                                                                      timed_p_mesh.copy()])
+                    else:
+                        self.con_dict[k] = {}
+                        self.con_dict[k]['t_coords'] = [timed_p_mesh.copy()]
+                        self.con_dict[k]['pos'] = mesh_pos
+                        self.con_dict[k]['quat'] = mesh_quat
+                        self.con_dict[k]['mesh'] = v['mesh']
+                        self.con_dict[k]['mesh_offset'] = mesh_offset
+
+
     def run_sim(self, callbacks: dict[str, Callable]=None) -> None:
         """Run the simulation for the specified time."""
         if self.hip_omega is None:
@@ -129,6 +178,27 @@ class Duplo(MjcSim):
 
         quats = []
 
+        self.contact_bodies = {
+            'leg_v': {
+                'pos': np.array([0.14908, -0.3625, -0.0124026]),
+                'mesh_offset' : np.array([-0.265, 0, 0]),
+                'quat': np.array([0, 0, -0.707107, 0.707107]),
+                'mesh': 'part_1'
+                },
+            'leg_v_2': {
+                'pos': np.array([-0.14908, -0.3625, -0.0124026]),
+                'mesh_offset' : np.array([0.265, 0, 0]),
+                'quat': np.array([0.707107, 0.707107, 0, 0]),
+                'mesh': 'part_1'
+                }
+            }
+
+        for k in self.contact_bodies.keys():
+            self.contact_bodies[k]['body_id'] = mujoco.mj_name2id(self.model,
+                                                                  mujoco.mjtObj.mjOBJ_BODY, 
+                                                                  k)
+        self.con_dict: dict[str,dict[str,list|np.ndarray|str]] = {}
+
         for _ in loop:
             self.calculate_sine_reference()
             self.calculate_pd_ctrl()    
@@ -138,6 +208,8 @@ class Duplo(MjcSim):
 
             quats.append(self.data.qpos[3:7].copy())
             # print(f"quats: {quats[-1]}")
+
+            self.record_contact_points()
 
             if callbacks:
                 for name, func in callbacks.items():
@@ -207,7 +279,11 @@ def main():
         recorder.stack_video_frames(recorder.plot_frames, 
                                     recorder.robot_frames,
                                     output_path=f"{v_dir}/combined.mp4")
-        
+    # Save to file
+
+    with open("contact_dict.pkl", "wb") as f:
+        pkl.dump(robot.con_dict, f)
+
     robot.close()
         
 if __name__ == "__main__":
