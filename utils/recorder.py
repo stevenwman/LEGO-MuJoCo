@@ -30,7 +30,7 @@ class Recorder:
         self.plt_attr = plot_attributes  # { "varName": {"title": "plotTitle", "color": (G,B,R), "line_style": "--"} }
         self.plt_struc = plot_structure  # [[xvar, yvar1, yvar2], [xvar2, yvar3], ...]
         self.plot_time_range = plot_time_range
-        assert plot_time_range[1] > plot_time_range[0] or plot_time_range is None, "Invalid time range!"
+        assert plot_time_range is None or plot_time_range[1] > plot_time_range[0], "Invalid time range!"
         # Initialize empty lists for each variable in plot_attributes
         for var in self.plt_attr:
             self.plt_data[var] = []

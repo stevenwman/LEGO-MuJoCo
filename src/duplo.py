@@ -218,7 +218,7 @@ class Duplo(MjcSim):
         mean_quat = np.mean(quats, axis=0)
         # print(quats)
         print(f"mean quat: {mean_quat}")
-        print(f"last quat: {quats[-1]}")
+        # print(f"last quat: {quats[-1]}")
         
 def main():
     args = arg_parser("Duplo Sim Args")
@@ -250,11 +250,13 @@ def main():
     }
 
     args['design_params'] = {
-        'body_pos_offset': {'leg_v' : [-0.0, 0, 0], 
-                            'leg_v_2' : [-0.0, 0, 0]},
+        'body_pos_offset': {'leg_v' : [-0.04, 0, 0], 
+                            'leg_v_2' : [-0.04, 0, 0]},
         # 'body_quat' : {'motor' : [1, 0, 0, 0]},
-        'body_quat' : {'motor' : [9.91243386e-01, 1.22932829e-01, -3.19655647e-05, 2.30992995e-03]},
-        # 'body_quat' : {'motor' : [-8.60502024e-04, -6.59361173e-07, 4.95928642e-02, 9.98769146e-01]},
+        # 'body_quat' : {'motor' : [9.91243386e-01, 1.22932829e-01, -3.19655647e-05, 2.30992995e-03]},
+        # 'body_quat' : {'motor' : [9.97807368e-01, 2.87891505e-02, 4.02491563e-05, 2.85128626e-03]},
+        'body_quat' : {'motor' : [9.98779182e-01, 4.81020604e-02, 9.37764791e-05, 3.21280654e-03]},
+        
         'mesh_scale' : {'part_1' : [1.3, 1, 1]}
     }
 
