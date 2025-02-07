@@ -69,17 +69,17 @@ class Duplo(MjcSim):
         self.reference = self.leg_amp_rad * wave_val
         if self.data.time < waittime: self.reference = 0
 
-    def calculate_cosine_reference(self, 
-                                   wait_time: float=1.0, 
-                                   init_time: float=1.0,
-                                   b:float=1.0) -> None:
-        """Calculate the cosine wave control signal for the hip joint."""
-        # b defines how sharp a cosine wave is, higher the sharper
-        wave = np.cos(self.hip_omega * (self.data.time-wait_time))
-        wave_val = np.sqrt((1 + b**2) / (1 + (b**2) * wave**2))*wave
-        self.reference = self.leg_amp_rad * wave_val
-        if self.data.time < init_time + wait_time: self.reference = self.leg_amp_rad
-        if self.data.time < wait_time: self.reference = 0
+    # def calculate_cosine_reference(self, 
+    #                                wait_time: float=1.0, 
+    #                                init_time: float=1.0,
+    #                                b:float=1.0) -> None:
+    #     """Calculate the cosine wave control signal for the hip joint."""
+    #     # b defines how sharp a cosine wave is, higher the sharper
+    #     wave = np.cos(self.hip_omega * (self.data.time-wait_time))
+    #     wave_val = np.sqrt((1 + b**2) / (1 + (b**2) * wave**2))*wave
+    #     self.reference = self.leg_amp_rad * wave_val
+    #     if self.data.time < init_time + wait_time: self.reference = self.leg_amp_rad
+    #     if self.data.time < wait_time: self.reference = 0
         
     def apply_ctrl(self) -> None:
         """Apply the calculated control signal to the hip joint."""
@@ -91,7 +91,7 @@ class Duplo(MjcSim):
 
     def calculate_pd_ctrl(self, hist_window: int=10) -> None:
         """Calculate the PID control signal for the hip joint."""
-        self.calculate_sine_reference()
+        # self.calculate_sine_reference()
 
         if self.action is None: # Initialize the control signal
             # start a queue 

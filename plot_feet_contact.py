@@ -40,7 +40,6 @@ for key, v in con_pts_dict.items():
     
     # Apply element-wise multiplication (scaling) to the mesh points:
     mesh_points_stretched = mesh_points * stretch_factors
-
     mesh_points_transformed = rot.apply(mesh_points_stretched) + trans + offset
 
     # If you need to update the PolyData, rebuild the connectivity as before:
