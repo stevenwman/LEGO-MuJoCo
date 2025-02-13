@@ -64,14 +64,17 @@ class Duplo(MjcSim):
     def calculate_sine_reference(self, waittime: float=1.0, b:float=1.0) -> None:
         """Calculate the sine wave control signal for the hip joint."""
         # b defines how sharp a sine wave is, higher the sharper
-        wave = np.sin(self.hip_omega * (self.data.time-waittime))
-        wave_val = np.sqrt((1 + b**2) / (1 + (b**2) * wave**2))*wave
-        self.reference = self.leg_amp_rad * wave_val
+        steady_sine = lambda w, t, t0: np.sin(w*(t-t0)) if t > t0 else 0
+        trans_sine = lambda w, t, t0: np.sin(w*(t-t0)) if abs(w*(t0-t)+np.pi/2) < np.pi/2 else 0
+        # wave = np.sin(self.hip_omega * (self.data.time-waittime))
+        composite = lambda A, w1, w2, t, t0: A*trans_sine(w1, t, t0) - steady_sine(w2, t, t0 + np.pi/w1)
+        # wave_val = np.sqrt((1 + b**2) / (1 + (b**2) * wave**2))*wave
+        self.reference = self.leg_amp_rad * composite(1.5, self.hip_omega * 2, self.hip_omega, self.data.time, waittime)
         if self.data.time < waittime: self.reference = 0
 
     # def calculate_cosine_reference(self, 
     #                                wait_time: float=1.0, 
-    #                                init_time: float=1.0,
+    #                                init_time: float=2.0,
     #                                b:float=1.0) -> None:
     #     """Calculate the cosine wave control signal for the hip joint."""
     #     # b defines how sharp a cosine wave is, higher the sharper
@@ -91,7 +94,6 @@ class Duplo(MjcSim):
 
     def calculate_pd_ctrl(self, hist_window: int=10) -> None:
         """Calculate the PID control signal for the hip joint."""
-        # self.calculate_sine_reference()
 
         if self.action is None: # Initialize the control signal
             # start a queue 
@@ -201,6 +203,7 @@ class Duplo(MjcSim):
 
         for _ in loop:
             self.calculate_sine_reference()
+            # self.calculate_cosine_reference()
             self.calculate_pd_ctrl()    
             self.apply_ctrl()
             self.step_sim()
@@ -257,7 +260,7 @@ def main():
         # 'body_quat' : {'motor' : [9.97807368e-01, 2.87891505e-02, 4.02491563e-05, 2.85128626e-03]},
         'body_quat' : {'motor' : [9.98779182e-01, 4.81020604e-02, 9.37764791e-05, 3.21280654e-03]},
         
-        'mesh_scale' : {'part_1' : [1.3, 1, 1]}
+        'mesh_scale' : {'part_1' : [1.2, 1, 1]}
     }
 
     robot = Duplo(args)

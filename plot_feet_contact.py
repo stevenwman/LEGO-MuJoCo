@@ -13,7 +13,8 @@ with open('contact_dict.pkl', 'rb') as f:
 mesh_dir = 'robots/duplo_hip_offset_mjcf'
 
 # For a uniform stretch along each axis, define a stretch vector:
-stretch_factors = np.array([1.3, 1, 1])  # e.g., [1.5, 1.0, 1.0] to stretch x by 1.5
+stretch_factors = np.array([1.2, 1, 1])  # e.g., [1.5, 1.0, 1.0] to stretch x by 1.5
+# stretch_factors = np.array([1.3, 1, 1])
 
 # Create a PyVista plotter
 plotter = pv.Plotter()
