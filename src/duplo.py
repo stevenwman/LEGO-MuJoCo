@@ -152,14 +152,18 @@ class Duplo(MjcSim):
 
                     if k in self.con_dict.keys():
                         # vstack
-                        self.con_dict[k]['t_coords'] = np.vstack([self.con_dict[k]['t_coords'], 
-                                                                      timed_p_mesh.copy()])
+                        self.con_dict[k]['t_coords'] = np.vstack([self.con_dict[k]['t_coords'],
+                                                                  timed_p_mesh.copy()])
                     else:
                         self.con_dict[k] = {}
                         self.con_dict[k]['t_coords'] = [timed_p_mesh.copy()]
                         self.con_dict[k]['pos'] = mesh_pos
                         self.con_dict[k]['quat'] = mesh_quat
-                        self.con_dict[k]['mesh'] = v['mesh']
+
+                        for mesh in self.mjcf_handler.meshes:
+                            if mesh.get('name') == v['mesh']:
+                                file_name = mesh.get('file').split('.')[0]
+                                self.con_dict[k]['mesh'] = file_name
                         self.con_dict[k]['mesh_offset'] = mesh_offset
 
 
@@ -196,7 +200,7 @@ class Duplo(MjcSim):
         self.con_dict: dict[str,dict[str,list|np.ndarray|str]] = {}
 
         for _ in loop:
-            self.calculate_sine_reference(start_freq_mult=1.75, 
+            self.calculate_sine_reference(start_freq_mult=2, 
                                           start_amp_mult=1.5)
             self.calculate_pd_ctrl()    
             self.apply_ctrl()
