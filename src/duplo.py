@@ -61,28 +61,22 @@ class Duplo(MjcSim):
         pendulum_z = hip_pos[2] - com_pos[2]
         return pedulum_length, pendulum_z
 
-    def calculate_sine_reference(self, waittime: float=1.0, b:float=1.0) -> None:
+    def calculate_sine_reference(self, 
+                                 t_wait: float=1.0, 
+                                 start_freq_mult:float=1.0, 
+                                 start_amp_mult:float=1.0) -> None:
         """Calculate the sine wave control signal for the hip joint."""
-        # b defines how sharp a sine wave is, higher the sharper
-        steady_sine = lambda w, t, t0: np.sin(w*(t-t0)) if t > t0 else 0
-        trans_sine = lambda w, t, t0: np.sin(w*(t-t0)) if abs(w*(t0-t)+np.pi/2) < np.pi/2 else 0
-        # wave = np.sin(self.hip_omega * (self.data.time-waittime))
-        composite = lambda A, w1, w2, t, t0: A*trans_sine(w1, t, t0) - steady_sine(w2, t, t0 + np.pi/w1)
-        # wave_val = np.sqrt((1 + b**2) / (1 + (b**2) * wave**2))*wave
-        self.reference = self.leg_amp_rad * composite(1.5, self.hip_omega * 2, self.hip_omega, self.data.time, waittime)
-        if self.data.time < waittime: self.reference = 0
-
-    # def calculate_cosine_reference(self, 
-    #                                wait_time: float=1.0, 
-    #                                init_time: float=2.0,
-    #                                b:float=1.0) -> None:
-    #     """Calculate the cosine wave control signal for the hip joint."""
-    #     # b defines how sharp a cosine wave is, higher the sharper
-    #     wave = np.cos(self.hip_omega * (self.data.time-wait_time))
-    #     wave_val = np.sqrt((1 + b**2) / (1 + (b**2) * wave**2))*wave
-    #     self.reference = self.leg_amp_rad * wave_val
-    #     if self.data.time < init_time + wait_time: self.reference = self.leg_amp_rad
-    #     if self.data.time < wait_time: self.reference = 0
+        # steady state sine wave
+        steady_sine = lambda w,t,t0: np.sin(w*(t-t0)) if t > t0 else 0
+        # transience sine wave only active in first half period
+        trans_sine = lambda w,t,t0: np.sin(w*(t-t0)) if abs(w*(t0-t)+np.pi/2) < np.pi/2 else 0
+        # combine them
+        composite = lambda A,w1,w2,t,t0: A*trans_sine(w1,t,t0) - steady_sine(w2,t,t0+np.pi/w1)
+        self.reference = self.leg_amp_rad * composite(start_amp_mult, 
+                                                      self.hip_omega * start_freq_mult, 
+                                                      self.hip_omega, 
+                                                      self.data.time, 
+                                                      t_wait)
         
     def apply_ctrl(self) -> None:
         """Apply the calculated control signal to the hip joint."""
@@ -182,9 +176,9 @@ class Duplo(MjcSim):
 
         self.contact_bodies = {
             'leg_v': {
-                'pos': np.array([0.14908, -0.3625, -0.0124026]),
-                'mesh_offset' : np.array([-0.265, 0, 0]),
-                'quat': np.array([0, 0, -0.707107, 0.707107]),
+                'pos': np.array([0.14908, -0.3625, -0.0124026]),    # pos of mesh (rel to body)
+                'mesh_offset' : np.array([-0.265, 0, 0]),           # pos of body's parent's parent (rel to motor)
+                'quat': np.array([0, 0, -0.707107, 0.707107]),      # quat of mesh (rel to body)
                 'mesh': 'part_1'
                 },
             'leg_v_2': {
@@ -202,8 +196,8 @@ class Duplo(MjcSim):
         self.con_dict: dict[str,dict[str,list|np.ndarray|str]] = {}
 
         for _ in loop:
-            self.calculate_sine_reference()
-            # self.calculate_cosine_reference()
+            self.calculate_sine_reference(start_freq_mult=1.75, 
+                                          start_amp_mult=1.5)
             self.calculate_pd_ctrl()    
             self.apply_ctrl()
             self.step_sim()
