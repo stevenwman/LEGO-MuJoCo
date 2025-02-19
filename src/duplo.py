@@ -12,8 +12,6 @@ import yaml
 class Duplo(MjcSim):
     def __init__(self, config: dict) -> None:
         """Initialize the Duplo simulation environment."""
-        # scene_path = f"{config['robot_dir']}/duplo_ballfeet_mjcf/scene_motor.xml"
-        # scene_path = f"{config['robot_dir']}/duplo_hip_offset_mjcf/scene_hip_offset.xml"
         self.configs = config
         self.scene_path = f"{config['robot_dir']}/duplo_hip_feet_centered_mjcf/scene_hip_feet_centered.xml"
         self.camera_params = {
@@ -205,10 +203,8 @@ class Duplo(MjcSim):
             'stretch_factors' : np.array(self.configs['design_params']['mesh_scale']['part_1'])
             }
 
-        print(self.con_dict) 
-
         for _ in loop:
-            self.calculate_sine_reference(start_freq_mult=2, 
+            self.calculate_sine_reference(start_freq_mult=3, 
                                           start_amp_mult=1.5)
             self.calculate_pd_ctrl()    
             self.apply_ctrl()
@@ -245,8 +241,8 @@ def main():
     plot_structure = [
         ["time", "actuator_actual_pos", "actuator_setpoints"],  # Subplot 1: X = time, Y = angle & setpoint
         ["time", "actuator_torque"],  # Subplot 2: X = time, Y = torque
-        ["actuator_actual_pos", "actuator_torque"],  # Subplot 3: X = angle, Y = torque
-        # ["actuator_speed", "actuator_torque"],
+        # ["actuator_actual_pos", "actuator_torque"],  # Subplot 3: X = angle, Y = torque
+        ["actuator_speed", "actuator_torque"],
     ]
 
     # dictionary of control parameters
@@ -265,8 +261,17 @@ def main():
         # 'body_quat' : {'motor' : [9.91243386e-01, 1.22932829e-01, -3.19655647e-05, 2.30992995e-03]},
         # 'body_quat' : {'motor' : [9.97807368e-01, 2.87891505e-02, 4.02491563e-05, 2.85128626e-03]},
         'body_quat' : {'motor' : [9.98779182e-01, 4.81020604e-02, 9.37764791e-05, 3.21280654e-03]},
-        
-        'mesh_scale' : {'part_1' : [1.2, 1, 1]}
+        'geom_pos_offset' : {
+            'leg_v' : [0.265-0.1235, 0, 0],
+            'leg_v_2' : [-0.265+0.1235, 0, 0],
+            'arm' : [0, 0, +0.265-0.82+0.21*1.5],
+            'arm_2' : [0, 0, -0.265+0.82-0.21*1.5],
+            'battery' : [0, 0, +0.265-0.82+0.21*1.5],
+            'battery_2' : [0, 0, -0.265+0.82-0.21*1.5],
+            'hip' : [0.555-(0.7*1.11)/2, 0, 0],
+                             },
+        'mesh_scale' : {'part_1' : [1.2, 1, 1],
+                        'hip' : [0.7, 1, 1]}
     }
 
     robot = Duplo(args)

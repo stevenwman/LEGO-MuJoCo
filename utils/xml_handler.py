@@ -69,6 +69,28 @@ class MJCFHandler:
                            f"{float(pos.split()[2]) + offset[2]}")
                     body.set("pos", pos)
 
+        if "geom_pos_offset" in design_params.keys():
+            geom_pos_offset: dict = design_params["geom_pos_offset"]
+            for geom in self.geoms:
+                name = geom.get("name")
+                if name in geom_pos_offset.keys():
+                    offset = geom_pos_offset[name]
+                    pos = geom.get("pos")
+                    pos = (f"{float(pos.split()[0]) + offset[0]} "
+                           f"{float(pos.split()[1]) + offset[1]} "
+                           f"{float(pos.split()[2]) + offset[2]}")
+                    geom.set("pos", pos)
+
+        # if "geom_pos_set" in design_params.keys():
+        #     geom_pos_set: dict = design_params["geom_pos_set"]
+        #     for geom in self.geoms:
+        #         name = geom.get("name")
+        #         if name in geom_pos_set.keys():
+        #             offset = geom_pos_set[name]
+        #             pos = geom.get("pos")
+        #             pos = (f"{offset[0]} {offset[1]} {offset[2]}")
+        #             geom.set("pos", pos)
+
         if "body_quat" in design_params.keys():
             body_quat: dict = design_params["body_quat"]
             for body in self.bodies:
