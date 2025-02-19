@@ -13,7 +13,9 @@ class Duplo(MjcSim):
     def __init__(self, config: dict) -> None:
         """Initialize the Duplo simulation environment."""
         # scene_path = f"{config['robot_dir']}/duplo_ballfeet_mjcf/scene_motor.xml"
-        scene_path = f"{config['robot_dir']}/duplo_hip_offset_mjcf/scene_hip_offset.xml"
+        # scene_path = f"{config['robot_dir']}/duplo_hip_offset_mjcf/scene_hip_offset.xml"
+        self.configs = config
+        self.scene_path = f"{config['robot_dir']}/duplo_hip_feet_centered_mjcf/scene_hip_feet_centered.xml"
         self.camera_params = {
             # 'tracking': "leg_1",
             'tracking': "leg_h",
@@ -21,7 +23,7 @@ class Duplo(MjcSim):
             'xyaxis': [1, 0, 0, 0, 0, 1],
         }
 
-        new_scene_path = self.update_xml(scene_path, config['design_params'])
+        new_scene_path = self.update_xml(self.scene_path, config['design_params'])
         super().__init__(new_scene_path, config)
         self.get_hip_idx()
         self.init_ctrl_params(config["ctrl_dict"])
@@ -180,13 +182,13 @@ class Duplo(MjcSim):
 
         self.contact_bodies = {
             'leg_v': {
-                'pos': np.array([0.14908, -0.3625, -0.0124026]),    # pos of mesh (rel to body)
+                'pos': np.array([0.14908, -0.9875, -0.0125974]),    # pos of mesh (rel to body)
                 'mesh_offset' : np.array([-0.265, 0, 0]),           # pos of body's parent's parent (rel to motor)
                 'quat': np.array([0, 0, -0.707107, 0.707107]),      # quat of mesh (rel to body)
-                'mesh': 'part_1'
+                'mesh': 'part_1' 
                 },
             'leg_v_2': {
-                'pos': np.array([-0.14908, -0.3625, -0.0124026]),
+                'pos': np.array([-0.14908, -0.9875, -0.0124026]),
                 'mesh_offset' : np.array([0.265, 0, 0]),
                 'quat': np.array([0.707107, 0.707107, 0, 0]),
                 'mesh': 'part_1'
@@ -198,6 +200,12 @@ class Duplo(MjcSim):
                                                                   mujoco.mjtObj.mjOBJ_BODY, 
                                                                   k)
         self.con_dict: dict[str,dict[str,list|np.ndarray|str]] = {}
+        self.con_dict['params'] = {
+            'mesh_dir' : '/'.join((self.scene_path.split('/')[:-1])),
+            'stretch_factors' : np.array(self.configs['design_params']['mesh_scale']['part_1'])
+            }
+
+        print(self.con_dict) 
 
         for _ in loop:
             self.calculate_sine_reference(start_freq_mult=2, 
